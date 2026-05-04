@@ -1,0 +1,196 @@
+# -----------------------------------------------------------------------------
+# Root-level variables for GenAI CI/CD Pipeline
+# All environment-specific inputs are defined here to support replication
+# across up to 30 distinct AWS accounts without structural module changes.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------
+# General
+# -----------------------------------------------
+
+variable "environment" {
+  description = "Environment name (e.g., dev, stage, prod)"
+  type        = string
+}
+
+variable "project_name" {
+  description = "Project name used in resource naming and tagging"
+  type        = string
+  default     = "genai-cicd"
+}
+
+variable "aws_region" {
+  description = "AWS region for deployment"
+  type        = string
+}
+
+# -----------------------------------------------
+# Networking
+# -----------------------------------------------
+
+variable "vpc_id" {
+  description = "VPC ID for the environment"
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "Subnet IDs for ECS tasks and CodeBuild"
+  type        = list(string)
+}
+
+# -----------------------------------------------
+# GitHub / Source
+# -----------------------------------------------
+
+variable "github_connection_name" {
+  description = "Name of the AWS CodeConnection for GitHub integration"
+  type        = string
+  default     = "github-connection"
+}
+
+variable "librechat_repo" {
+  description = "GitHub repository for LibreChat (owner/repo format)"
+  type        = string
+}
+
+variable "librechat_branch" {
+  description = "Branch pattern to trigger the LibreChat pipeline"
+  type        = string
+  default     = "dev*"
+}
+
+variable "admin_portal_repo" {
+  description = "GitHub repository for Admin Portal (owner/repo format)"
+  type        = string
+}
+
+variable "admin_portal_branch" {
+  description = "Branch pattern to trigger the Admin Portal pipeline"
+  type        = string
+  default     = "dev*"
+}
+
+variable "terraform_repo" {
+  description = "GitHub repository for Terraform IaC (owner/repo format)"
+  type        = string
+}
+
+variable "terraform_branch" {
+  description = "Branch to trigger the Terraform pipeline"
+  type        = string
+  default     = "dev"
+}
+
+# -----------------------------------------------
+# ECR
+# -----------------------------------------------
+
+variable "librechat_ecr_repository_name" {
+  description = "ECR repository name for LibreChat container images"
+  type        = string
+  default     = "librechat"
+}
+
+variable "admin_portal_ecr_repository_name" {
+  description = "ECR repository name for Admin Portal container images"
+  type        = string
+  default     = "admin-portal"
+}
+
+# -----------------------------------------------
+# ECS / Compute
+# -----------------------------------------------
+
+variable "ecs_cluster_name" {
+  description = "Name of the ECS cluster (must already exist)"
+  type        = string
+  default     = ""
+}
+
+variable "librechat_container_port" {
+  description = "Container port for the LibreChat application"
+  type        = number
+  default     = 8080
+}
+
+variable "admin_portal_container_port" {
+  description = "Container port for the Admin Portal application"
+  type        = number
+  default     = 8080
+}
+
+variable "librechat_cpu" {
+  description = "CPU units for the LibreChat ECS task"
+  type        = number
+  default     = 1024
+}
+
+variable "librechat_memory" {
+  description = "Memory (MiB) for the LibreChat ECS task"
+  type        = number
+  default     = 2048
+}
+
+variable "admin_portal_cpu" {
+  description = "CPU units for the Admin Portal ECS task"
+  type        = number
+  default     = 1024
+}
+
+variable "admin_portal_memory" {
+  description = "Memory (MiB) for the Admin Portal ECS task"
+  type        = number
+  default     = 2048
+}
+
+# -----------------------------------------------
+# Data & Storage
+# -----------------------------------------------
+
+variable "efs_file_system_id" {
+  description = "EFS file system ID for persistent storage"
+  type        = string
+}
+
+variable "docdb_cluster_endpoint" {
+  description = "DocumentDB cluster endpoint"
+  type        = string
+}
+
+variable "docdb_secret_arn" {
+  description = "Secrets Manager ARN for DocumentDB credentials"
+  type        = string
+}
+
+variable "s3_bucket_name" {
+  description = "S3 bucket for application assets"
+  type        = string
+}
+
+# -----------------------------------------------
+# GenAI
+# -----------------------------------------------
+
+variable "bedrock_model_id" {
+  description = "Amazon Bedrock model ID for GenAI capabilities"
+  type        = string
+}
+
+# -----------------------------------------------
+# Notifications
+# -----------------------------------------------
+
+variable "notification_email" {
+  description = "Email address for SNS pipeline notifications"
+  type        = string
+}
+
+# -----------------------------------------------
+# Tags
+# -----------------------------------------------
+
+variable "additional_tags" {
+  description = "Additional tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}

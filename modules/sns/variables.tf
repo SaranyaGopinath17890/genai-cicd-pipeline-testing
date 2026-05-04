@@ -1,0 +1,1 @@
+# SNS module variables

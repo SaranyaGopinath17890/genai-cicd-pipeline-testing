@@ -1,0 +1,15 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+
+# Kiro IDE
+.kiro/
+
+# Planning docs (kept in docs/ for reference, not deployed)
+docs/
+
+# OS
+.DS_Store
+Thumbs.db
