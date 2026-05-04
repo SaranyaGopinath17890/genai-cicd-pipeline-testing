@@ -1,0 +1,57 @@
+# -----------------------------------------------------------------------------
+# Application Build — buildspec.yml
+# Builds a Docker image, tags it, pushes to ECR, and outputs
+# imagedefinitions.json for the ECS deploy stage.
+#
+# Required environment variables (set by CodeBuild project):
+#   AWS_DEFAULT_REGION   — AWS region (e.g., us-east-1)
+#   AWS_ACCOUNT_ID       — AWS account ID
+#   ECR_REPOSITORY_NAME  — ECR repository name
+#   CONTAINER_NAME       — Container name in the ECS task definition
+#
+# Image tagging convention:
+#   <branch>-<git-sha-short>-<timestamp>  (e.g., dev-a1b2c3d-20260504103000)
+#   latest                                (always points to most recent build)
+#
+# Requirements: 2.2, 2.3, 2.5
+# -----------------------------------------------------------------------------
+
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo "Setting image tag variables..."
+      - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | sed 's|refs/heads/||' || echo $CODEBUILD_SOURCE_VERSION | sed 's|refs/heads/||')
+      # Fallback if branch name is empty
+      - BRANCH_NAME=${BRANCH_NAME:-dev}
+      # Sanitize branch name for use in Docker tags (replace / with -)
+      - BRANCH_NAME=$(echo $BRANCH_NAME | sed 's|/|-|g')
+      - GIT_SHA_SHORT=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+      - TIMESTAMP=$(date +%Y%m%d%H%M%S)
+      - IMAGE_TAG="${BRANCH_NAME}-${GIT_SHA_SHORT}-${TIMESTAMP}"
+      - ECR_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME"
+      - echo "Image will be tagged as $ECR_URI:$IMAGE_TAG"
+
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t $ECR_URI:$IMAGE_TAG .
+      - echo "Tagging image as latest..."
+      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+
+  post_build:
+    commands:
+      - echo "Pushing image to ECR..."
+      - docker push $ECR_URI:$IMAGE_TAG
+      - docker push $ECR_URI:latest
+      - echo "Generating imagedefinitions.json..."
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$ECR_URI:$IMAGE_TAG" > imagedefinitions.json
+      - echo "Build complete. Image pushed as $ECR_URI:$IMAGE_TAG"
+      - cat imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
