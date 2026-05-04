@@ -57,3 +57,14 @@ output "ecs_task_role_name" {
   description = "Name of the ECS task role for runtime permissions"
   value       = aws_iam_role.ecs_task.name
 }
+
+# Terraform execution role (AssumeRole target)
+output "terraform_execution_role_arn" {
+  description = "ARN of the dedicated Terraform execution role (assumed via sts:AssumeRole)"
+  value       = aws_iam_role.terraform_execution.arn
+}
+
+output "terraform_execution_role_name" {
+  description = "Name of the dedicated Terraform execution role"
+  value       = aws_iam_role.terraform_execution.name
+}

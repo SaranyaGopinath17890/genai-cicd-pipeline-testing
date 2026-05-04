@@ -47,6 +47,44 @@ phases:
       - echo "Pushing image to ECR..."
       - docker push $ECR_URI:$IMAGE_TAG
       - docker push $ECR_URI:latest
+      - echo "Waiting for ECR scan to complete..."
+      - |
+        SCAN_STATUS="IN_PROGRESS"
+        RETRIES=0
+        MAX_RETRIES=30
+        while [ "$SCAN_STATUS" = "IN_PROGRESS" ] && [ $RETRIES -lt $MAX_RETRIES ]; do
+          sleep 10
+          SCAN_STATUS=$(aws ecr describe-image-scan-findings \
+            --repository-name $ECR_REPOSITORY_NAME \
+            --image-id imageTag=$IMAGE_TAG \
+            --query 'imageScanStatus.status' \
+            --output text 2>/dev/null || echo "IN_PROGRESS")
+          RETRIES=$((RETRIES + 1))
+          echo "Scan status: $SCAN_STATUS (attempt $RETRIES/$MAX_RETRIES)"
+        done
+      - echo "Checking scan findings for CRITICAL/HIGH vulnerabilities..."
+      - |
+        CRITICAL=$(aws ecr describe-image-scan-findings \
+          --repository-name $ECR_REPOSITORY_NAME \
+          --image-id imageTag=$IMAGE_TAG \
+          --query 'imageScanFindings.findingSeverityCounts.CRITICAL' \
+          --output text 2>/dev/null || echo "0")
+        HIGH=$(aws ecr describe-image-scan-findings \
+          --repository-name $ECR_REPOSITORY_NAME \
+          --image-id imageTag=$IMAGE_TAG \
+          --query 'imageScanFindings.findingSeverityCounts.HIGH' \
+          --output text 2>/dev/null || echo "0")
+        CRITICAL=${CRITICAL:-0}
+        HIGH=${HIGH:-0}
+        if [ "$CRITICAL" != "0" ] && [ "$CRITICAL" != "None" ]; then
+          echo "BLOCKING: $CRITICAL CRITICAL vulnerabilities found!"
+          exit 1
+        fi
+        if [ "$HIGH" != "0" ] && [ "$HIGH" != "None" ]; then
+          echo "BLOCKING: $HIGH HIGH vulnerabilities found!"
+          exit 1
+        fi
+        echo "No CRITICAL or HIGH vulnerabilities found. Proceeding."
       - echo "Generating imagedefinitions.json..."
       - printf '[{"name":"%s","imageUri":"%s"}]' "$CONTAINER_NAME" "$ECR_URI:$IMAGE_TAG" > imagedefinitions.json
       - echo "Build complete. Image pushed as $ECR_URI:$IMAGE_TAG"

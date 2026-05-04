@@ -1,0 +1,41 @@
+# Module: ecr
+
+## Purpose
+
+Creates an Amazon ECR repository with scan-on-push and lifecycle policies for image retention.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|----------|
+| name | ECR repository name | string | — | yes |
+| image_tag_mutability | Tag mutability (MUTABLE/IMMUTABLE) | string | MUTABLE | no |
+| scan_on_push | Enable vulnerability scanning on push | bool | true | no |
+| max_tagged_image_count | Max tagged images to retain | number | 10 | no |
+| tagged_prefix_list | Tag prefixes for retention rule | list(string) | ["dev","stage"] | no |
+| untagged_image_expiry_days | Days before untagged images expire | number | 7 | no |
+| force_delete | Delete repo even with images | bool | false | no |
+| tags | Tags to apply | map(string) | {} | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| repository_url | ECR repository URL |
+| repository_arn | ECR repository ARN |
+| repository_name | ECR repository name |
+| registry_id | AWS account ID hosting the registry |
+
+## Usage Example
+
+```hcl
+module "ecr_librechat" {
+  source = "./modules/ecr"
+  name   = "genai-cicd-dev-librechat"
+  tags   = { Environment = "dev" }
+}
+```
+
+## Dependencies
+
+None.

@@ -1,0 +1,71 @@
+# -----------------------------------------------------------------------------
+# Terraform Drift Detection — buildspec.yml
+# Runs terraform plan -detailed-exitcode to detect infrastructure drift.
+#
+# Exit codes:
+#   0 = No changes (no drift) — log to CloudWatch only
+#   1 = Error — send SNS alert
+#   2 = Changes detected (drift) — send SNS alert with summary
+#
+# Required environment variables:
+#   TF_VERSION       — Terraform version to install
+#   TF_WORKING_DIR   — Directory containing Terraform configuration
+#   TF_VAR_FILE      — Path to the .tfvars file (optional)
+#   SNS_TOPIC_ARN    — SNS topic for drift alerts
+#   AWS_DEFAULT_REGION — AWS region
+#
+# Requirements: 14.1, 14.2, 14.3
+# -----------------------------------------------------------------------------
+
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing Terraform ${TF_VERSION:-1.5.7}..."
+      - TF_VER="${TF_VERSION:-1.5.7}"
+      - curl -sL "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip" -o terraform.zip
+      - unzip -o terraform.zip -d /usr/local/bin/
+      - terraform --version
+
+  pre_build:
+    commands:
+      - echo "Initializing Terraform..."
+      - cd ${TF_WORKING_DIR:-.}
+      - terraform init -input=false
+
+  build:
+    commands:
+      - echo "Running drift detection..."
+      - cd ${TF_WORKING_DIR:-.}
+      - set +e
+      - |
+        if [ -n "${TF_VAR_FILE}" ]; then
+          terraform plan -input=false -detailed-exitcode -var-file="${TF_VAR_FILE}" -no-color > drift-output.txt 2>&1
+        else
+          terraform plan -input=false -detailed-exitcode -no-color > drift-output.txt 2>&1
+        fi
+      - EXIT_CODE=$?
+      - set -e
+      - echo "Terraform plan exit code: $EXIT_CODE"
+      - |
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "No drift detected."
+        elif [ $EXIT_CODE -eq 2 ]; then
+          echo "DRIFT DETECTED!"
+          PLAN_SUMMARY=$(tail -20 drift-output.txt)
+          LOG_LINK="https://console.aws.amazon.com/cloudwatch/home?region=${AWS_DEFAULT_REGION}#logsV2:log-groups/log-group/${CODEBUILD_LOG_PATH}"
+          MESSAGE=$(printf '{"source":"drift-detection","status":"DRIFT_DETECTED","timestamp":"%s","details":{"planSummary":"%s","logLink":"%s"}}' \
+            "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            "$PLAN_SUMMARY" \
+            "$LOG_LINK")
+          aws sns publish --topic-arn "$SNS_TOPIC_ARN" --message "$MESSAGE" --subject "Drift Detected" || echo "Warning: Failed to send SNS alert"
+        else
+          echo "Terraform plan error!"
+          ERROR_OUTPUT=$(tail -20 drift-output.txt)
+          aws sns publish --topic-arn "$SNS_TOPIC_ARN" --message "Drift detection error: $ERROR_OUTPUT" --subject "Drift Detection Error" || echo "Warning: Failed to send SNS alert"
+        fi
+
+  post_build:
+    commands:
+      - echo "Drift detection complete."

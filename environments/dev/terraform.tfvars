@@ -54,6 +54,28 @@ bedrock_model_id = "REPLACE_ME"   # e.g., "anthropic.claude-3-sonnet-20240229-v1
 # Notifications
 notification_email = "REPLACE_ME"   # e.g., "team@umass.edu"
 
+# Pipeline behavior
+require_manual_approval = false   # Set to true for prod environments
+
+# UMass Mandatory Tags
+uma_speed_type = "REPLACE_ME"
+uma_function   = "REPLACE_ME"
+uma_creator    = "REPLACE_ME"
+tag_arch       = "scalable"
+tag_org        = "umass"
+tag_project    = "genai"
+
+# Security Groups
+ecs_security_group_ids      = ["REPLACE_ME"]
+codebuild_security_group_ids = []   # Only needed if CodeBuild requires VPC access
+
+# Load Balancer
+librechat_target_group_arn    = "REPLACE_ME"
+admin_portal_target_group_arn = "REPLACE_ME"
+
+# ECS Cluster
+ecs_cluster_id = ""   # Leave empty to use ecs_cluster_name
+
 # Additional tags (optional)
 additional_tags = {
   Owner      = "UMass"

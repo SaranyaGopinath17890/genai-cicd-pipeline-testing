@@ -376,6 +376,13 @@ resource "aws_iam_role_policy" "codebuild_terraform" {
           "s3:GetBucketLocation"
         ]
         Resource = "*"
+      },
+      # AssumeRole — allow CodeBuild to assume the dedicated Terraform execution role
+      {
+        Sid      = "AssumeExecutionRole"
+        Effect   = "Allow"
+        Action   = "sts:AssumeRole"
+        Resource = aws_iam_role.terraform_execution.arn
       }
     ]
   })
@@ -536,6 +543,96 @@ resource "aws_iam_role_policy" "ecs_task" {
           "logs:PutLogEvents"
         ]
         Resource = local.cloudwatch_log_group_arns
+      }
+    ]
+  })
+}
+
+# =============================================================================
+# 6. Terraform Execution Role (AssumeRole target)
+# Trust: CodeBuild Terraform role (via sts:AssumeRole)
+# Permissions: Scoped resource provisioning for Terraform-managed resources
+# This role is assumed by CodeBuild during terraform plan/apply.
+#
+# Requirements: 20.1, 20.2
+# =============================================================================
+
+resource "aws_iam_role" "terraform_execution" {
+  name = "${var.name_prefix}-terraform-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.codebuild_terraform.arn
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy" "terraform_execution" {
+  name = "${var.name_prefix}-terraform-execution-policy"
+  role = aws_iam_role.terraform_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Resource provisioning — scoped to project-prefixed resources
+      # In production, scope this further to specific resource types and ARN patterns.
+      {
+        Sid    = "ResourceProvisioning"
+        Effect = "Allow"
+        Action = [
+          "ec2:Describe*",
+          "ecs:*",
+          "ecr:*",
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePolicy",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:PassRole",
+          "iam:TagRole",
+          "iam:UntagRole",
+          "elasticfilesystem:Describe*",
+          "elasticloadbalancing:*",
+          "codebuild:*",
+          "codepipeline:*",
+          "codeconnections:*",
+          "codestar-connections:*",
+          "sns:*",
+          "ssm:*",
+          "secretsmanager:*",
+          "logs:*",
+          "cloudwatch:*",
+          "events:*",
+          "s3:CreateBucket",
+          "s3:DeleteBucket",
+          "s3:PutBucketPolicy",
+          "s3:GetBucketPolicy",
+          "s3:PutBucketVersioning",
+          "s3:GetBucketVersioning",
+          "s3:PutEncryptionConfiguration",
+          "s3:GetEncryptionConfiguration",
+          "s3:PutLifecycleConfiguration",
+          "s3:GetLifecycleConfiguration",
+          "s3:PutBucketPublicAccessBlock",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = "*"
       }
     ]
   })

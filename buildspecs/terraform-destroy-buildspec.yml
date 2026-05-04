@@ -1,0 +1,49 @@
+# -----------------------------------------------------------------------------
+# Terraform Destroy — buildspec.yml
+# Runs terraform plan -destroy and terraform destroy -auto-approve.
+# Only used by the destroy safeguard pipeline (manual trigger + mandatory approval).
+#
+# Required environment variables:
+#   TF_VERSION       — Terraform version to install
+#   TF_WORKING_DIR   — Directory containing Terraform configuration
+#   TF_VAR_FILE      — Path to the .tfvars file (optional)
+#   AWS_DEFAULT_REGION — AWS region
+#
+# Requirements: 13.4, 13.5
+# -----------------------------------------------------------------------------
+
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing Terraform ${TF_VERSION:-1.5.7}..."
+      - TF_VER="${TF_VERSION:-1.5.7}"
+      - curl -sL "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip" -o terraform.zip
+      - unzip -o terraform.zip -d /usr/local/bin/
+      - terraform --version
+
+  pre_build:
+    commands:
+      - echo "Initializing Terraform..."
+      - cd ${TF_WORKING_DIR:-.}
+      - terraform init -input=false
+
+  build:
+    commands:
+      - echo "Running Terraform destroy..."
+      - cd ${TF_WORKING_DIR:-.}
+      - |
+        if [ -n "${TF_VAR_FILE}" ]; then
+          terraform destroy -input=false -auto-approve -var-file="${TF_VAR_FILE}"
+        else
+          terraform destroy -input=false -auto-approve
+        fi
+
+  post_build:
+    commands:
+      - echo "Terraform destroy complete."
+
+cache:
+  paths:
+    - "${TF_WORKING_DIR:-.}/.terraform/**/*"

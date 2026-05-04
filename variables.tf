@@ -186,6 +186,34 @@ variable "notification_email" {
 }
 
 # -----------------------------------------------
+# Pipeline behavior
+# -----------------------------------------------
+
+variable "require_manual_approval" {
+  description = "Whether the Terraform pipeline requires manual approval before apply (false for dev, true for prod)"
+  type        = bool
+  default     = false
+}
+
+variable "github_token_secret_arn" {
+  description = "Secrets Manager ARN for GitHub API token (used for PR comments). Leave empty to skip PR comments."
+  type        = string
+  default     = ""
+}
+
+variable "codebuild_timeout_minutes" {
+  description = "Default timeout in minutes for application CodeBuild projects"
+  type        = number
+  default     = 30
+}
+
+variable "terraform_codebuild_timeout_minutes" {
+  description = "Timeout in minutes for Terraform CodeBuild projects"
+  type        = number
+  default     = 60
+}
+
+# -----------------------------------------------
 # Tags
 # -----------------------------------------------
 
@@ -193,4 +221,86 @@ variable "additional_tags" {
   description = "Additional tags to apply to all resources"
   type        = map(string)
   default     = {}
+}
+
+# -----------------------------------------------
+# UMass Mandatory Tags (Requirement 11)
+# -----------------------------------------------
+
+variable "uma_speed_type" {
+  description = "UMass speed type tag value"
+  type        = string
+  default     = ""
+}
+
+variable "uma_function" {
+  description = "UMass function tag value"
+  type        = string
+  default     = ""
+}
+
+variable "uma_creator" {
+  description = "UMass creator tag value"
+  type        = string
+  default     = ""
+}
+
+variable "tag_arch" {
+  description = "ARCH tag value"
+  type        = string
+  default     = "scalable"
+}
+
+variable "tag_org" {
+  description = "ORG tag value"
+  type        = string
+  default     = "umass"
+}
+
+variable "tag_project" {
+  description = "PROJECT tag value"
+  type        = string
+  default     = "genai"
+}
+
+# -----------------------------------------------
+# Security Groups
+# -----------------------------------------------
+
+variable "ecs_security_group_ids" {
+  description = "Security group IDs for ECS tasks"
+  type        = list(string)
+  default     = []
+}
+
+variable "codebuild_security_group_ids" {
+  description = "Security group IDs for CodeBuild projects (if VPC access needed)"
+  type        = list(string)
+  default     = []
+}
+
+# -----------------------------------------------
+# Load Balancer
+# -----------------------------------------------
+
+variable "librechat_target_group_arn" {
+  description = "ARN of the ALB target group for LibreChat"
+  type        = string
+  default     = ""
+}
+
+variable "admin_portal_target_group_arn" {
+  description = "ARN of the ALB target group for Admin Portal"
+  type        = string
+  default     = ""
+}
+
+# -----------------------------------------------
+# ECS Cluster
+# -----------------------------------------------
+
+variable "ecs_cluster_id" {
+  description = "ID of the ECS cluster (if different from name)"
+  type        = string
+  default     = ""
 }
