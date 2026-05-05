@@ -136,6 +136,12 @@ variable "enable_notifications" {
   type        = bool
 }
 
+variable "enable_notifications" {
+  description = "Whether to create EventBridge notification rules for pipeline events"
+  type        = bool
+  default     = true
+}
+
 variable "notification_events" {
   description = "Which pipeline events generate notifications: both, success_only, failure_only, every_stage"
   type        = string

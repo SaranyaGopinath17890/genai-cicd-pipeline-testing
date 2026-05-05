@@ -42,30 +42,6 @@ notification_email = "saranya.gopinath@cdwg.com"
 # Docker build context
 docker_build_context = "apps/librechat"
 
-# Pipeline behavior
-codebuild_timeout_minutes = 30
-
-# Logging
-log_retention_days = 30
-
-# ECR Scanning
-ecr_notification_type = "scan_result"
-
-# Observability
-failure_rate_alarm_threshold = 50
-failure_rate_alarm_period    = 3600
-
-# Security Groups
-ecs_security_group_ids       = []
-codebuild_security_group_ids = []
-
-# Load Balancer
-librechat_target_group_arn = ""
-
-# ECS Cluster
-ecs_cluster_name = ""
-ecs_cluster_id   = ""
-
 # -----------------------------------------------
 # Tags
 # -----------------------------------------------
