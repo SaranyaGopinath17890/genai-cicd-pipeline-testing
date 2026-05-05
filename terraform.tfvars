@@ -51,10 +51,10 @@ notification_email = "REPLACE_ME" # e.g., "team@umass.edu"
 
 # Pipeline behavior
 require_manual_approval = false # Set to true for prod environments
-approval_timeout_hours  = 168   # Default: 7 days (168 hours) — AWS CodePipeline hardcoded max
-# NOTE: CodePipeline approval timeout is fixed at 7 days by AWS.
-# If shorter timeout (e.g., 24 hours) is needed, implement a Lambda + EventBridge
-# rule to auto-reject the approval after the desired window.
+approval_timeout_hours  = 168   # Default: 7 days (168 hours). Configurable: min 5 min, max 60 days.
+# NOTE: CodePipeline approval timeout default is 7 days at the account level.
+# It can be overridden per action (5 minutes to 86400 minutes / 60 days).
+# See: ActionDeclaration in the CodePipeline API Reference.
 
 # Security Groups
 ecs_security_group_ids       = ["REPLACE_ME"]

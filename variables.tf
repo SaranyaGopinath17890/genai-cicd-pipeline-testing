@@ -196,7 +196,7 @@ variable "require_manual_approval" {
 }
 
 variable "approval_timeout_hours" {
-  description = "Hours before manual approval auto-rejects. Default: 168 (7 days) — AWS CodePipeline hardcoded max. For shorter timeouts, a Lambda + EventBridge auto-reject rule is required."
+  description = "Hours before manual approval auto-rejects. Default: 168 (7 days). Configurable per action from 5 minutes to 60 days via CodePipeline ActionDeclaration timeout setting."
   type        = number
   default     = 168
 }
