@@ -125,18 +125,6 @@ module "drift_detection" {
 }
 
 # =============================================================================
-# ECR Scanning
-# =============================================================================
-
-module "ecr_scanning" {
-  source = "./modules/ecr-scanning"
-
-  name_prefix           = local.name_prefix
-  ecr_notification_type = var.ecr_notification_type
-  sns_topic_arn         = module.sns.topic_arn
-  tags                  = local.common_tags
-}
-
 # =============================================================================
 # Observability
 # =============================================================================
@@ -165,9 +153,11 @@ module "observability" {
 module "ecr_librechat" {
   source = "./modules/ecr"
 
-  name         = "${local.name_prefix}-${var.librechat_ecr_repository_name}"
-  scan_on_push = true
-  tags         = local.common_tags
+  name                  = "${local.name_prefix}-${var.librechat_ecr_repository_name}"
+  scan_on_push          = true
+  ecr_notification_type = var.ecr_notification_type
+  sns_topic_arn         = module.sns.topic_arn
+  tags                  = local.common_tags
 }
 
 # CodeBuild — LibreChat image build project
@@ -252,9 +242,11 @@ module "pipeline_librechat" {
 module "ecr_admin_portal" {
   source = "./modules/ecr"
 
-  name         = "${local.name_prefix}-${var.admin_portal_ecr_repository_name}"
-  scan_on_push = true
-  tags         = local.common_tags
+  name                  = "${local.name_prefix}-${var.admin_portal_ecr_repository_name}"
+  scan_on_push          = true
+  ecr_notification_type = var.ecr_notification_type
+  sns_topic_arn         = module.sns.topic_arn
+  tags                  = local.common_tags
 }
 
 # CodeBuild — Admin Portal image build project

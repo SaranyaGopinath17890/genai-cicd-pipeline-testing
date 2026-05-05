@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # ECR Module — Variables
-# Inputs for ECR repository configuration and lifecycle policies.
+# Inputs for ECR repository configuration, lifecycle policies, and scan notifications.
 # -----------------------------------------------------------------------------
 
 variable "name" {
@@ -47,6 +47,23 @@ variable "force_delete" {
   description = "Whether to delete the repository even if it contains images"
   type        = bool
   default     = false
+}
+
+variable "ecr_notification_type" {
+  description = "ECR notification scope: scan_result, all, or none"
+  type        = string
+  default     = "scan_result"
+
+  validation {
+    condition     = contains(["scan_result", "all", "none"], var.ecr_notification_type)
+    error_message = "ecr_notification_type must be one of: scan_result, all, none."
+  }
+}
+
+variable "sns_topic_arn" {
+  description = "ARN of the SNS topic for scan notifications (required if ecr_notification_type is not none)"
+  type        = string
+  default     = ""
 }
 
 variable "tags" {

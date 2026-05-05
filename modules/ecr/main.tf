@@ -1,14 +1,17 @@
 # -----------------------------------------------------------------------------
 # ECR Module — Amazon Elastic Container Registry
-# Creates an ECR repository with lifecycle policies for image retention.
+# Creates an ECR repository with lifecycle policies and scan event notifications.
 #
 # Features:
 #   - Scan on push (configurable)
 #   - Lifecycle policy: retain N tagged images, expire untagged after N days
 #   - Configurable tag mutability
-#
-# Requirements: 2.2, 4.4
+#   - EventBridge rules for scan result notifications via SNS
 # -----------------------------------------------------------------------------
+
+# =============================================================================
+# ECR Repository
+# =============================================================================
 
 resource "aws_ecr_repository" "this" {
   name                 = var.name
@@ -55,4 +58,45 @@ resource "aws_ecr_lifecycle_policy" "this" {
       }
     ]
   })
+}
+
+# =============================================================================
+# ECR Scan Event Notifications
+# =============================================================================
+
+resource "aws_cloudwatch_event_rule" "ecr_scan" {
+  count = var.ecr_notification_type != "none" ? 1 : 0
+
+  name        = "${var.name}-ecr-scan-events"
+  description = "Capture ECR image scan completion events"
+
+  event_pattern = jsonencode(
+    var.ecr_notification_type == "all" ? {
+      source      = ["aws.ecr"]
+      detail-type = ["ECR Image Scan", "ECR Image Action"]
+      } : {
+      source      = ["aws.ecr"]
+      detail-type = ["ECR Image Scan"]
+    }
+  )
+
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_event_target" "ecr_scan_sns" {
+  count = var.ecr_notification_type != "none" ? 1 : 0
+
+  rule      = aws_cloudwatch_event_rule.ecr_scan[0].name
+  target_id = "${var.name}-ecr-scan-sns"
+  arn       = var.sns_topic_arn
+
+  input_transformer {
+    input_paths = {
+      repo   = "$.detail.repository-name"
+      digest = "$.detail.image-digest"
+      status = "$.detail.scan-status"
+      tags   = "$.detail.image-tags"
+    }
+    input_template = "\"ECR Scan Complete | Repo: <repo> | Tags: <tags> | Status: <status> | Digest: <digest>\""
+  }
 }

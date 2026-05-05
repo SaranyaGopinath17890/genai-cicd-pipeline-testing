@@ -144,5 +144,5 @@ output "drift_detection_project_arn" {
 
 output "ecr_scanning_rule_arn" {
   description = "ARN of the ECR scanning EventBridge rule"
-  value       = module.ecr_scanning.event_rule_arn
+  value       = module.ecr_librechat.scan_event_rule_arn
 }
