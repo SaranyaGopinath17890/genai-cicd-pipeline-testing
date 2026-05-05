@@ -2,17 +2,59 @@
 # Root Module — GenAI CI/CD Pipeline Composition
 # Wires all modules together for the target environment.
 #
-# This file instantiates:
-#   - IAM roles (shared across all pipelines)
-#   - SNS topic (shared notifications)
-#   - Secrets Manager + Parameter Store entries
-#   - ECR repositories (LibreChat, Admin Portal)
-#   - CodeBuild projects (LibreChat, Admin Portal)
-#   - ECS services (LibreChat, Admin Portal)
-#   - CodePipelines (LibreChat, Admin Portal)
-#
-# The Terraform pipeline is instantiated separately in Task 11.
+# This file contains ONLY module calls and data sources.
 # -----------------------------------------------------------------------------
+
+# =============================================================================
+# Data Sources
+# =============================================================================
+
+data "aws_caller_identity" "current" {}
+
+# =============================================================================
+# CodeConnection
+# =============================================================================
+
+module "codeconnection" {
+  source = "./modules/codeconnection"
+
+  name          = "${local.name_prefix}-${var.github_connection_name}"
+  provider_type = "GitHub"
+  tags          = local.common_tags
+}
+
+# =============================================================================
+# Logging
+# =============================================================================
+
+module "logging" {
+  source = "./modules/logging"
+
+  name_prefix        = local.name_prefix
+  log_retention_days = var.log_retention_days
+
+  log_group_names = {
+    codebuild_librechat    = local.codebuild_log_group_librechat
+    codebuild_admin_portal = local.codebuild_log_group_admin_portal
+    codebuild_terraform    = local.codebuild_log_group_terraform
+    ecs_librechat          = local.ecs_log_group_librechat
+    ecs_admin_portal       = local.ecs_log_group_admin_portal
+  }
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# TFVars Bucket
+# =============================================================================
+
+module "tfvars_bucket" {
+  source = "./modules/tfvars-bucket"
+
+  bucket_name        = local.tfvars_bucket_name
+  codebuild_role_arn = module.iam.codebuild_terraform_role_arn
+  tags               = local.common_tags
+}
 
 # =============================================================================
 # Shared Infrastructure
@@ -22,9 +64,9 @@
 module "iam" {
   source = "./modules/iam"
 
-  name_prefix            = local.name_prefix
-  codestar_connection_arn = aws_codestarconnections_connection.github.arn
-  tags                   = local.common_tags
+  name_prefix             = local.name_prefix
+  codestar_connection_arn = module.codeconnection.connection_arn
+  tags                    = local.common_tags
 }
 
 # SNS — shared notification topic
@@ -66,6 +108,56 @@ module "secrets" {
 }
 
 # =============================================================================
+# Drift Detection
+# =============================================================================
+
+module "drift_detection" {
+  source = "./modules/drift-detection"
+
+  name_prefix         = local.terraform_name
+  codebuild_role_arn  = module.iam.codebuild_terraform_role_arn
+  schedule_expression = var.drift_detection_schedule
+  enabled             = var.enable_drift_detection
+  sns_topic_arn       = module.sns.topic_arn
+  aws_region          = var.aws_region
+  log_retention_days  = var.log_retention_days
+  tags                = local.common_tags
+}
+
+# =============================================================================
+# ECR Scanning
+# =============================================================================
+
+module "ecr_scanning" {
+  source = "./modules/ecr-scanning"
+
+  name_prefix           = local.name_prefix
+  ecr_notification_type = var.ecr_notification_type
+  sns_topic_arn         = module.sns.topic_arn
+  tags                  = local.common_tags
+}
+
+# =============================================================================
+# Observability
+# =============================================================================
+
+module "observability" {
+  source = "./modules/observability"
+
+  name_prefix = local.name_prefix
+  pipeline_names = [
+    module.pipeline_librechat.pipeline_name,
+    module.pipeline_admin_portal.pipeline_name,
+    module.pipeline_terraform.pipeline_name,
+  ]
+  sns_topic_arn                = module.sns.topic_arn
+  failure_rate_alarm_threshold = var.failure_rate_alarm_threshold
+  failure_rate_alarm_period    = var.failure_rate_alarm_period
+  aws_region                   = var.aws_region
+  tags                         = local.common_tags
+}
+
+# =============================================================================
 # LibreChat Pipeline
 # =============================================================================
 
@@ -104,13 +196,13 @@ module "codebuild_librechat" {
 module "ecs_librechat" {
   source = "./modules/ecs-service"
 
-  name                   = local.librechat_name
-  container_image        = "${module.ecr_librechat.repository_url}:latest"
-  container_port         = var.librechat_container_port
-  cpu                    = var.librechat_cpu
-  memory                 = var.librechat_memory
+  name                    = local.librechat_name
+  container_image         = "${module.ecr_librechat.repository_url}:latest"
+  container_port          = var.librechat_container_port
+  cpu                     = var.librechat_cpu
+  memory                  = var.librechat_memory
   task_execution_role_arn = module.iam.ecs_task_execution_role_arn
-  task_role_arn          = module.iam.ecs_task_role_arn
+  task_role_arn           = module.iam.ecs_task_role_arn
 
   secrets = [
     { name = "DOCDB_CONNECTION_STRING", valueFrom = module.secrets.secret_arns["docdb-connection-string"] },
@@ -140,7 +232,7 @@ module "pipeline_librechat" {
   name                    = "${local.librechat_name}-pipeline"
   role_arn                = module.iam.codepipeline_role_arn
   artifact_bucket_name    = "${local.librechat_name}-artifacts"
-  codestar_connection_arn = aws_codestarconnections_connection.github.arn
+  codestar_connection_arn = module.codeconnection.connection_arn
   repository              = var.librechat_repo
   branch                  = var.librechat_branch
   codebuild_project_name  = module.codebuild_librechat.project_name
@@ -191,13 +283,13 @@ module "codebuild_admin_portal" {
 module "ecs_admin_portal" {
   source = "./modules/ecs-service"
 
-  name                   = local.admin_portal_name
-  container_image        = "${module.ecr_admin_portal.repository_url}:latest"
-  container_port         = var.admin_portal_container_port
-  cpu                    = var.admin_portal_cpu
-  memory                 = var.admin_portal_memory
+  name                    = local.admin_portal_name
+  container_image         = "${module.ecr_admin_portal.repository_url}:latest"
+  container_port          = var.admin_portal_container_port
+  cpu                     = var.admin_portal_cpu
+  memory                  = var.admin_portal_memory
   task_execution_role_arn = module.iam.ecs_task_execution_role_arn
-  task_role_arn          = module.iam.ecs_task_role_arn
+  task_role_arn           = module.iam.ecs_task_role_arn
 
   secrets = [
     { name = "DOCDB_CONNECTION_STRING", valueFrom = module.secrets.secret_arns["docdb-connection-string"] },
@@ -226,7 +318,7 @@ module "pipeline_admin_portal" {
   name                    = "${local.admin_portal_name}-pipeline"
   role_arn                = module.iam.codepipeline_role_arn
   artifact_bucket_name    = "${local.admin_portal_name}-artifacts"
-  codestar_connection_arn = aws_codestarconnections_connection.github.arn
+  codestar_connection_arn = module.codeconnection.connection_arn
   repository              = var.admin_portal_repo
   branch                  = var.admin_portal_branch
   codebuild_project_name  = module.codebuild_admin_portal.project_name
@@ -283,7 +375,7 @@ module "codebuild_terraform_plan" {
     { name = "AWS_DEFAULT_REGION", value = var.aws_region },
     { name = "GITHUB_TOKEN_SECRET_ARN", value = var.github_token_secret_arn },
     { name = "GITHUB_REPO", value = var.terraform_repo },
-    { name = "TFVARS_BUCKET", value = local.tfvars_bucket_name },
+    { name = "TFVARS_BUCKET", value = module.tfvars_bucket.bucket_name },
     { name = "ENVIRONMENT", value = var.environment },
   ]
 
@@ -310,7 +402,7 @@ module "codebuild_terraform_apply" {
     { name = "TF_VERSION", value = "1.5.7" },
     { name = "TF_WORKING_DIR", value = "." },
     { name = "AWS_DEFAULT_REGION", value = var.aws_region },
-    { name = "TFVARS_BUCKET", value = local.tfvars_bucket_name },
+    { name = "TFVARS_BUCKET", value = module.tfvars_bucket.bucket_name },
     { name = "ENVIRONMENT", value = var.environment },
   ]
 
@@ -325,10 +417,15 @@ module "pipeline_terraform" {
   name                    = "${local.terraform_name}-pipeline"
   role_arn                = module.iam.codepipeline_role_arn
   artifact_bucket_name    = "${local.terraform_name}-artifacts"
-  codestar_connection_arn = aws_codestarconnections_connection.github.arn
+  codestar_connection_arn = module.codeconnection.connection_arn
   repository              = var.terraform_repo
   branch                  = var.terraform_branch
   pipeline_type           = "terraform"
+
+  # Required but unused for terraform pipeline type
+  codebuild_project_name = module.codebuild_terraform_plan.project_name
+  ecs_cluster_name       = ""
+  ecs_service_name       = ""
 
   # Terraform-specific stages
   terraform_validate_project_name = module.codebuild_terraform_validate.project_name
@@ -350,7 +447,6 @@ module "pipeline_terraform" {
 # Terraform Destroy Safeguard Pipeline
 # Manual trigger only — never triggered by commits or schedules.
 # Always requires approval regardless of require_manual_approval setting.
-# Requirements: 13.4, 13.5
 # =============================================================================
 
 # CodeBuild — Terraform destroy
@@ -374,77 +470,35 @@ module "codebuild_terraform_destroy" {
 }
 
 # Destroy pipeline — Source → Approval (mandatory) → Destroy
-resource "aws_codepipeline" "terraform_destroy" {
-  name     = "${local.terraform_name}-destroy-pipeline"
-  role_arn = module.iam.codepipeline_role_arn
+module "pipeline_terraform_destroy" {
+  source = "./modules/codepipeline"
 
-  artifact_store {
-    location = module.pipeline_terraform.artifact_bucket_name
-    type     = "S3"
-  }
+  name                    = "${local.terraform_name}-destroy-pipeline"
+  role_arn                = module.iam.codepipeline_role_arn
+  artifact_bucket_name    = module.pipeline_terraform.artifact_bucket_name
+  codestar_connection_arn = module.codeconnection.connection_arn
+  repository              = var.terraform_repo
+  branch                  = var.terraform_branch
+  pipeline_type           = "terraform"
+  detect_changes          = false
 
-  # Source Stage — same repo, but detect_changes = false (no auto-trigger)
-  stage {
-    name = "Source"
+  # Required but unused for terraform pipeline type
+  codebuild_project_name = module.codebuild_terraform_destroy.project_name
+  ecs_cluster_name       = ""
+  ecs_service_name       = ""
 
-    action {
-      name             = "Source"
-      category         = "Source"
-      owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
-      version          = "1"
-      output_artifacts = ["source_output"]
+  # Terraform-specific stages — uses destroy project
+  terraform_validate_project_name = module.codebuild_terraform_destroy.project_name
+  terraform_plan_project_name     = module.codebuild_terraform_destroy.project_name
+  terraform_apply_project_name    = module.codebuild_terraform_destroy.project_name
 
-      configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.github.arn
-        FullRepositoryId = var.terraform_repo
-        BranchName       = var.terraform_branch
-        DetectChanges    = false
-      }
-    }
-  }
+  # Always require approval for destroy
+  require_manual_approval = true
+  approval_sns_topic_arn  = module.sns.topic_arn
 
-  # Mandatory Approval — always required regardless of environment
-  stage {
-    name = "Approval"
-
-    action {
-      name     = "MandatoryApproval"
-      category = "Approval"
-      owner    = "AWS"
-      provider = "Manual"
-      version  = "1"
-
-      configuration = {
-        NotificationArn = module.sns.topic_arn
-        CustomData      = "WARNING: This will DESTROY all infrastructure. Review carefully before approving."
-      }
-    }
-  }
-
-  # Destroy Stage
-  stage {
-    name = "Destroy"
-
-    action {
-      name            = "TerraformDestroy"
-      category        = "Build"
-      owner           = "AWS"
-      provider        = "CodeBuild"
-      version         = "1"
-      input_artifacts = ["source_output"]
-
-      configuration = {
-        ProjectName = module.codebuild_terraform_destroy.project_name
-      }
-    }
-  }
+  # Notifications
+  sns_topic_arn       = module.sns.topic_arn
+  notification_events = "both"
 
   tags = local.common_tags
 }
-
-# =============================================================================
-# Data Sources
-# =============================================================================
-
-data "aws_caller_identity" "current" {}

@@ -30,8 +30,8 @@ resource "aws_sns_topic_policy" "this" {
     Statement = [
       # Allow CodePipeline to publish notifications
       {
-        Sid       = "AllowCodePipelinePublish"
-        Effect    = "Allow"
+        Sid    = "AllowCodePipelinePublish"
+        Effect = "Allow"
         Principal = {
           Service = "codepipeline.amazonaws.com"
         }
@@ -45,8 +45,8 @@ resource "aws_sns_topic_policy" "this" {
       },
       # Allow CloudWatch Events / EventBridge to publish notifications
       {
-        Sid       = "AllowEventsPublish"
-        Effect    = "Allow"
+        Sid    = "AllowEventsPublish"
+        Effect = "Allow"
         Principal = {
           Service = "events.amazonaws.com"
         }
@@ -60,8 +60,8 @@ resource "aws_sns_topic_policy" "this" {
       },
       # Allow CodeBuild to publish notifications (for drift detection, scan alerts)
       {
-        Sid       = "AllowCodeBuildPublish"
-        Effect    = "Allow"
+        Sid    = "AllowCodeBuildPublish"
+        Effect = "Allow"
         Principal = {
           Service = "codebuild.amazonaws.com"
         }
@@ -75,8 +75,8 @@ resource "aws_sns_topic_policy" "this" {
       },
       # Allow AWS Budgets to publish cost alerts
       {
-        Sid       = "AllowBudgetsPublish"
-        Effect    = "Allow"
+        Sid    = "AllowBudgetsPublish"
+        Effect = "Allow"
         Principal = {
           Service = "budgets.amazonaws.com"
         }

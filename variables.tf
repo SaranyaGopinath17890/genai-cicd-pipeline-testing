@@ -214,6 +214,73 @@ variable "terraform_codebuild_timeout_minutes" {
 }
 
 # -----------------------------------------------
+# Logging
+# -----------------------------------------------
+
+variable "log_retention_days" {
+  description = "Number of days to retain CloudWatch logs"
+  type        = number
+  default     = 30
+}
+
+# -----------------------------------------------
+# Drift Detection
+# -----------------------------------------------
+
+variable "drift_detection_schedule" {
+  description = "EventBridge schedule expression for drift detection (cron or rate)"
+  type        = string
+  default     = "cron(0 6 * * ? *)"
+}
+
+variable "enable_drift_detection" {
+  description = "Whether to enable drift detection"
+  type        = bool
+  default     = true
+}
+
+# -----------------------------------------------
+# ECR Scanning
+# -----------------------------------------------
+
+variable "ecr_notification_type" {
+  description = "ECR notification scope: scan_result, all, or none"
+  type        = string
+  default     = "scan_result"
+
+  validation {
+    condition     = contains(["scan_result", "all", "none"], var.ecr_notification_type)
+    error_message = "ecr_notification_type must be one of: scan_result, all, none."
+  }
+}
+
+# -----------------------------------------------
+# Observability
+# -----------------------------------------------
+
+variable "failure_rate_alarm_threshold" {
+  description = "Pipeline failure rate percentage threshold for CloudWatch alarm"
+  type        = number
+  default     = 50
+}
+
+variable "failure_rate_alarm_period" {
+  description = "Evaluation period in seconds for the failure rate alarm"
+  type        = number
+  default     = 3600
+}
+
+# -----------------------------------------------
+# TFVars Bucket
+# -----------------------------------------------
+
+variable "tfvars_bucket_name" {
+  description = "S3 bucket name for TFVars storage (auto-generated if empty)"
+  type        = string
+  default     = ""
+}
+
+# -----------------------------------------------
 # Tags
 # -----------------------------------------------
 

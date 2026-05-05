@@ -28,4 +28,7 @@ locals {
   codebuild_log_group_terraform    = "/aws/codebuild/${local.terraform_name}-plan-apply"
   ecs_log_group_librechat          = "/ecs/${local.librechat_name}"
   ecs_log_group_admin_portal       = "/ecs/${local.admin_portal_name}"
+
+  # TFVars bucket name (auto-generated if not provided)
+  tfvars_bucket_name = var.tfvars_bucket_name != "" ? var.tfvars_bucket_name : "${local.name_prefix}-tfvars"
 }

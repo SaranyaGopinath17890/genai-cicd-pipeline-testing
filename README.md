@@ -1,5 +1,18 @@
 # GenAI CI/CD Pipeline — Terraform Infrastructure
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Modules](#modules)
+- [Providers & Requirements](#providers--requirements)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Deploying to a New Environment](#deploying-to-a-new-environment)
+- [Module Dependencies](#module-dependencies)
+- [Key Design Decisions](#key-design-decisions)
+- [Resources / References](#resources--references)
+
 ## Overview
 
 This Terraform project provisions three CI/CD pipelines for the UMass GenAI environment:
@@ -20,7 +33,29 @@ GitHub → CodeConnection → CodePipeline → CodeBuild → ECR → ECS Fargate
                                                     SNS Notifications
 ```
 
-## Module Structure
+## Modules
+
+| Module | Description | README |
+|--------|-------------|--------|
+| [codebuild](./modules/codebuild/) | CodeBuild projects for Docker image builds and Terraform operations | [README](./modules/codebuild/README.md) |
+| [codepipeline](./modules/codepipeline/) | CodePipeline with Source, Build, Deploy stages and EventBridge notifications | [README](./modules/codepipeline/README.md) |
+| [ecr](./modules/ecr/) | ECR repositories with scan-on-push and lifecycle policies | [README](./modules/ecr/README.md) |
+| [ecs-service](./modules/ecs-service/) | ECS Fargate task definitions and services with circuit breaker rollback | [README](./modules/ecs-service/README.md) |
+| [iam](./modules/iam/) | Least-privilege IAM roles for CodePipeline, CodeBuild, and ECS | [README](./modules/iam/README.md) |
+| [secrets](./modules/secrets/) | Secrets Manager secrets and SSM Parameter Store parameters | [README](./modules/secrets/README.md) |
+| [sns](./modules/sns/) | SNS topic and subscriptions for pipeline notifications | [README](./modules/sns/README.md) |
+
+## Providers & Requirements
+
+| Requirement | Version |
+|-------------|---------|
+| Terraform | >= 1.5 |
+| AWS Provider | >= 5.0 |
+| Provider Source | hashicorp/aws |
+
+The root module configures the AWS provider with region and default tags. Child modules declare their own `required_providers` block but inherit the provider configuration from the root.
+
+## Project Structure
 
 ```
 ├── main.tf                    # Root composition — wires all modules together
@@ -29,6 +64,7 @@ GitHub → CodeConnection → CodePipeline → CodeBuild → ECR → ECS Fargate
 ├── locals.tf                  # Naming conventions and common tags
 ├── backend.tf                 # S3 state backend with DynamoDB locking
 ├── versions.tf                # Terraform and provider version constraints
+├── providers.tf               # AWS provider configuration with default tags
 ├── codeconnection.tf          # GitHub CodeConnection resource
 ├── logging.tf                 # CloudWatch Log Groups
 ├── buildspecs/
@@ -137,3 +173,13 @@ ecs-service ──────────────────────�
 - **Configurable approval gate** — `require_manual_approval = false` for dev, `true` for prod
 - **Provider-level default_tags** — UMass mandatory tags applied to all resources automatically
 - **Secrets Manager + Parameter Store** — no secrets in source code or S3
+
+## Resources / References
+
+- [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [AWS CodePipeline Documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html)
+- [AWS CodeBuild Documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html)
+- [Amazon ECR Documentation](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html)
+- [Amazon ECS Documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html)
+- [AWS CodeConnections](https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html)
+- [Terraform Module Best Practices](https://developer.hashicorp.com/terraform/language/modules/develop)

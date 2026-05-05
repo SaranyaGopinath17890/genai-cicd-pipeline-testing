@@ -258,13 +258,13 @@ locals {
   # Determine which pipeline resource to reference
   pipeline_arn = var.pipeline_type == "application" ? (
     length(aws_codepipeline.application) > 0 ? aws_codepipeline.application[0].arn : ""
-  ) : (
+    ) : (
     length(aws_codepipeline.terraform) > 0 ? aws_codepipeline.terraform[0].arn : ""
   )
 
   pipeline_name = var.pipeline_type == "application" ? (
     length(aws_codepipeline.application) > 0 ? aws_codepipeline.application[0].name : ""
-  ) : (
+    ) : (
     length(aws_codepipeline.terraform) > 0 ? aws_codepipeline.terraform[0].name : ""
   )
 
