@@ -8,14 +8,11 @@ locals {
   name_prefix = "${var.project_name}-${var.environment}"
 
   # Common tags applied to every resource
-  common_tags = merge(
-    {
-      Project     = var.project_name
-      Environment = var.environment
-      ManagedBy   = "terraform"
-    },
-    var.additional_tags,
-  )
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "terraform"
+  }
 
   # Per-pipeline naming
   librechat_name    = "${local.name_prefix}-librechat"

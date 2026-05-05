@@ -29,6 +29,7 @@ admin_portal_ecr_repository_name = "admin-portal"
 
 # ECS / Compute
 ecs_cluster_name            = "REPLACE_ME"
+ecs_cluster_id              = "" # Leave empty to use ecs_cluster_name
 librechat_container_port    = 8080
 admin_portal_container_port = 8080
 librechat_cpu               = 1024
@@ -50,14 +51,10 @@ notification_email = "REPLACE_ME" # e.g., "team@umass.edu"
 
 # Pipeline behavior
 require_manual_approval = false # Set to true for prod environments
-
-# UMass Mandatory Tags
-uma_speed_type = "REPLACE_ME"
-uma_function   = "REPLACE_ME"
-uma_creator    = "REPLACE_ME"
-tag_arch       = "scalable"
-tag_org        = "umass"
-tag_project    = "genai"
+approval_timeout_hours  = 168   # Default: 7 days (168 hours) — AWS CodePipeline hardcoded max
+# NOTE: CodePipeline approval timeout is fixed at 7 days by AWS.
+# If shorter timeout (e.g., 24 hours) is needed, implement a Lambda + EventBridge
+# rule to auto-reject the approval after the desired window.
 
 # Security Groups
 ecs_security_group_ids       = ["REPLACE_ME"]
@@ -67,11 +64,18 @@ codebuild_security_group_ids = [] # Only needed if CodeBuild requires VPC access
 librechat_target_group_arn    = "REPLACE_ME"
 admin_portal_target_group_arn = "REPLACE_ME"
 
-# ECS Cluster
-ecs_cluster_id = "" # Leave empty to use ecs_cluster_name
+# -----------------------------------------------
+# Tags
+# All resource tags are defined here and applied via default_tags in providers.tf.
+# -----------------------------------------------
 
-# Additional tags (optional)
-additional_tags = {
-  Owner      = "UMass"
-  CostCenter = "REPLACE_ME"
-}
+# UMass Mandatory Tags
+uma_speed_type = "REPLACE_ME"
+uma_function   = "REPLACE_ME"
+uma_creator    = "REPLACE_ME"
+
+# Project Tags
+tag_arch    = "scalable"
+tag_env     = "dev"
+tag_org     = "umass"
+tag_project = "genai"

@@ -195,6 +195,12 @@ variable "require_manual_approval" {
   default     = false
 }
 
+variable "approval_timeout_hours" {
+  description = "Hours before manual approval auto-rejects. Default: 168 (7 days) — AWS CodePipeline hardcoded max. For shorter timeouts, a Lambda + EventBridge auto-reject rule is required."
+  type        = number
+  default     = 168
+}
+
 variable "github_token_secret_arn" {
   description = "Secrets Manager ARN for GitHub API token (used for PR comments). Leave empty to skip PR comments."
   type        = string
@@ -281,16 +287,6 @@ variable "tfvars_bucket_name" {
 }
 
 # -----------------------------------------------
-# Tags
-# -----------------------------------------------
-
-variable "additional_tags" {
-  description = "Additional tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
-
-# -----------------------------------------------
 # UMass Mandatory Tags (Requirement 11)
 # -----------------------------------------------
 
@@ -310,6 +306,34 @@ variable "uma_creator" {
   description = "UMass creator tag value"
   type        = string
   default     = ""
+}
+
+# -----------------------------------------------
+# Project Tags
+# -----------------------------------------------
+
+variable "tag_arch" {
+  description = "ARCH tag value"
+  type        = string
+  default     = "scalable"
+}
+
+variable "tag_env" {
+  description = "ENV tag value"
+  type        = string
+  default     = "dev"
+}
+
+variable "tag_org" {
+  description = "ORG tag value"
+  type        = string
+  default     = "umass"
+}
+
+variable "tag_project" {
+  description = "PROJECT tag value"
+  type        = string
+  default     = "genai"
 }
 
 # -----------------------------------------------
