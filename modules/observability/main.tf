@@ -22,14 +22,13 @@ resource "aws_cloudwatch_dashboard" "pipelines" {
           title   = "Pipeline Execution Count"
           view    = "timeSeries"
           stacked = false
-          metrics = flatten([
-            for name in var.pipeline_names : [
-              ["AWS/CodePipeline", "PipelineExecutionSucceeded", "PipelineName", name, { stat = "Sum", period = 86400 }],
-              ["AWS/CodePipeline", "PipelineExecutionFailed", "PipelineName", name, { stat = "Sum", period = 86400 }],
-            ]
-          ])
+          metrics = concat(
+            [for name in var.pipeline_names : ["AWS/CodePipeline", "PipelineExecutionSucceeded", "PipelineName", name]],
+            [for name in var.pipeline_names : ["AWS/CodePipeline", "PipelineExecutionFailed", "PipelineName", name]]
+          )
           region = var.aws_region
           period = 86400
+          stat   = "Sum"
         }
       },
       {
@@ -44,10 +43,11 @@ resource "aws_cloudwatch_dashboard" "pipelines" {
           stacked = false
           metrics = [
             for name in var.pipeline_names :
-            ["AWS/CodePipeline", "PipelineExecutionTime", "PipelineName", name, { stat = "Average", period = 86400 }]
+            ["AWS/CodePipeline", "PipelineExecutionTime", "PipelineName", name]
           ]
           region = var.aws_region
           period = 86400
+          stat   = "Average"
         }
       },
       {
@@ -62,10 +62,11 @@ resource "aws_cloudwatch_dashboard" "pipelines" {
           stacked = true
           metrics = [
             for name in var.pipeline_names :
-            ["AWS/CodePipeline", "PipelineExecutionFailed", "PipelineName", name, { stat = "Sum", period = 3600 }]
+            ["AWS/CodePipeline", "PipelineExecutionFailed", "PipelineName", name]
           ]
           region = var.aws_region
           period = 3600
+          stat   = "Sum"
         }
       }
     ]

@@ -277,7 +277,7 @@ locals {
     every_stage  = ["STARTED", "SUCCEEDED", "FAILED", "STOPPED", "SUPERSEDED"]
   }
 
-  create_notification = var.sns_topic_arn != ""
+  create_notification = var.enable_notifications
 }
 
 resource "aws_cloudwatch_event_rule" "pipeline_events" {
