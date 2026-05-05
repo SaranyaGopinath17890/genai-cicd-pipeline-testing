@@ -120,6 +120,17 @@ variable "approval_sns_topic_arn" {
   default     = ""
 }
 
+variable "approval_timeout_minutes" {
+  description = "Timeout in minutes for the manual approval action (5–86400). Default: 1440 (24 hours)."
+  type        = number
+  default     = 1440
+
+  validation {
+    condition     = var.approval_timeout_minutes >= 5 && var.approval_timeout_minutes <= 86400
+    error_message = "approval_timeout_minutes must be between 5 and 86400."
+  }
+}
+
 # ---------------------------------------------------------------------------
 # Notifications
 # ---------------------------------------------------------------------------

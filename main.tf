@@ -415,6 +415,7 @@ module "pipeline_terraform" {
   # Approval gate — false for dev, true for prod
   require_manual_approval = var.require_manual_approval
   approval_sns_topic_arn  = module.sns.topic_arn
+  approval_timeout_minutes = var.approval_timeout_hours * 60
 
   # Notifications
   sns_topic_arn       = module.sns.topic_arn
@@ -473,8 +474,9 @@ module "pipeline_terraform_destroy" {
   terraform_apply_project_name    = module.codebuild_terraform_destroy.project_name
 
   # Always require approval for destroy
-  require_manual_approval = true
-  approval_sns_topic_arn  = module.sns.topic_arn
+  require_manual_approval  = true
+  approval_sns_topic_arn   = module.sns.topic_arn
+  approval_timeout_minutes = var.approval_timeout_hours * 60
 
   # Notifications
   sns_topic_arn       = module.sns.topic_arn

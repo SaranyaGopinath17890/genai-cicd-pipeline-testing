@@ -196,9 +196,9 @@ variable "require_manual_approval" {
 }
 
 variable "approval_timeout_hours" {
-  description = "Hours before manual approval auto-rejects. Default: 168 (7 days) — AWS CodePipeline hardcoded max. For shorter timeouts, a Lambda + EventBridge auto-reject rule is required."
+  description = "Hours before manual approval auto-rejects (min 1, max 1440). Default: 24 hours."
   type        = number
-  default     = 168
+  default     = 24
 }
 
 variable "github_token_secret_arn" {

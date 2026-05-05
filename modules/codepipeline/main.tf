@@ -214,11 +214,12 @@ resource "aws_codepipeline" "terraform" {
       name = "Approval"
 
       action {
-        name     = "ManualApproval"
-        category = "Approval"
-        owner    = "AWS"
-        provider = "Manual"
-        version  = "1"
+        name             = "ManualApproval"
+        category         = "Approval"
+        owner            = "AWS"
+        provider         = "Manual"
+        version          = "1"
+        timeout_in_minutes = var.approval_timeout_minutes
 
         configuration = {
           NotificationArn = var.approval_sns_topic_arn
