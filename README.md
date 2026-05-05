@@ -15,11 +15,11 @@
 
 ## Overview
 
-This Terraform project provisions three CI/CD pipelines for the UMass GenAI environment:
+This Terraform project provisions a CI/CD pipeline for the UMass GenAI environment:
 
-1. **LibreChat Pipeline** — builds and deploys the LibreChat GenAI application to ECS Fargate
-2. **Admin Portal Pipeline** — builds and deploys the administration portal to ECS Fargate
-3. **Terraform Pipeline** — runs terraform plan/apply with optional manual approval
+- **LibreChat Pipeline** — builds and deploys the LibreChat GenAI application to ECS Fargate
+
+Terraform is applied manually from a local machine for this POC. A dedicated Terraform pipeline and Admin Portal pipeline may be added in a future engagement.
 
 All infrastructure is defined as reusable, parameterized Terraform modules supporting replication across up to 30 distinct AWS accounts.
 
@@ -37,13 +37,15 @@ GitHub → CodeConnection → CodePipeline → CodeBuild → ECR → ECS Fargate
 
 | Module | Description | README |
 |--------|-------------|--------|
-| [codebuild](./modules/codebuild/) | CodeBuild projects for Docker image builds and Terraform operations | [README](./modules/codebuild/README.md) |
+| [codebuild](./modules/codebuild/) | CodeBuild projects for Docker image builds | [README](./modules/codebuild/README.md) |
 | [codepipeline](./modules/codepipeline/) | CodePipeline with Source, Build, Deploy stages and EventBridge notifications | [README](./modules/codepipeline/README.md) |
 | [ecr](./modules/ecr/) | ECR repositories with scan-on-push and lifecycle policies | [README](./modules/ecr/README.md) |
 | [ecs-service](./modules/ecs-service/) | ECS Fargate task definitions and services with circuit breaker rollback | [README](./modules/ecs-service/README.md) |
 | [iam](./modules/iam/) | Least-privilege IAM roles for CodePipeline, CodeBuild, and ECS | [README](./modules/iam/README.md) |
 | [secrets](./modules/secrets/) | Secrets Manager secrets and SSM Parameter Store parameters | [README](./modules/secrets/README.md) |
 | [sns](./modules/sns/) | SNS topic and subscriptions for pipeline notifications | [README](./modules/sns/README.md) |
+| [observability](./modules/observability/) | CloudWatch dashboard and alarms for pipeline metrics | — |
+| [logging](./modules/logging/) | CloudWatch Log Groups for CodeBuild and ECS | — |
 
 ## Providers & Requirements
 
@@ -65,23 +67,22 @@ The root module configures the AWS provider with region and default tags. Child 
 ├── backend.tf                 # S3 state backend with DynamoDB locking
 ├── versions.tf                # Terraform and provider version constraints
 ├── providers.tf               # AWS provider configuration with default tags
-├── codeconnection.tf          # GitHub CodeConnection resource
-├── logging.tf                 # CloudWatch Log Groups
+├── terraform.tfvars           # Dev environment values (REPLACE_ME placeholders)
 ├── buildspecs/
-│   ├── app-buildspec.yml              # Docker image build for applications
-│   ├── terraform-plan-buildspec.yml   # Terraform plan
-│   └── terraform-apply-buildspec.yml  # Terraform apply
+│   └── app-buildspec.yml      # Docker image build for LibreChat
 ├── environments/
 │   └── dev/
-│       └── terraform.tfvars   # Dev environment values (REPLACE_ME placeholders)
+│       └── terraform.tfvars   # Dev environment values
 └── modules/
     ├── iam/            # IAM roles for CodePipeline, CodeBuild, ECS
     ├── ecr/            # ECR repositories with lifecycle policies
     ├── sns/            # SNS topic and subscriptions for notifications
     ├── secrets/        # Secrets Manager and Parameter Store entries
-    ├── codebuild/      # CodeBuild projects (app builds + Terraform)
+    ├── codebuild/      # CodeBuild projects (app builds)
     ├── codepipeline/   # CodePipeline with Source, Build, Deploy stages
-    └── ecs-service/    # ECS task definitions and services with circuit breaker
+    ├── ecs-service/    # ECS task definitions and services with circuit breaker
+    ├── observability/  # CloudWatch dashboard and alarms
+    └── logging/        # CloudWatch Log Groups
 ```
 
 ## Prerequisites
@@ -89,7 +90,7 @@ The root module configures the AWS provider with region and default tags. Child 
 - Terraform >= 1.5
 - AWS CLI configured with appropriate credentials
 - Existing infrastructure: VPC, subnets, ECS cluster, ALB with target groups, EFS, DocumentDB, S3 bucket
-- GitHub repositories for LibreChat, Admin Portal, and Terraform IaC
+- GitHub repository for LibreChat
 
 ## Deploying to a New Environment
 
@@ -109,8 +110,6 @@ Edit `environments/<env>/terraform.tfvars` and replace all `REPLACE_ME` placehol
 | `vpc_id` | VPC ID for the target environment |
 | `subnet_ids` | Private subnet IDs for ECS tasks and CodeBuild |
 | `librechat_repo` | GitHub repository (owner/repo format) |
-| `admin_portal_repo` | GitHub repository (owner/repo format) |
-| `terraform_repo` | GitHub repository (owner/repo format) |
 | `ecs_cluster_name` | Existing ECS cluster name |
 | `efs_file_system_id` | EFS file system ID |
 | `docdb_cluster_endpoint` | DocumentDB cluster endpoint |
@@ -120,8 +119,6 @@ Edit `environments/<env>/terraform.tfvars` and replace all `REPLACE_ME` placehol
 | `notification_email` | Team email for SNS notifications |
 | `ecs_security_group_ids` | Security group IDs for ECS tasks |
 | `librechat_target_group_arn` | ALB target group ARN for LibreChat |
-| `admin_portal_target_group_arn` | ALB target group ARN for Admin Portal |
-| `require_manual_approval` | `false` for dev, `true` for prod |
 
 ### Step 3: Update backend configuration
 
@@ -145,17 +142,7 @@ terraform plan -var-file=terraform.tfvars
 terraform apply -var-file=terraform.tfvars
 ```
 
-### Step 5: Copy tfvars to S3
-
-After apply, upload tfvars to the state bucket as a versioned backup:
-
-```bash
-aws s3 cp terraform.tfvars s3://umass-genai-terraform-state/cicd-pipeline/terraform.tfvars
-```
-
-> **Note:** Run this after every `terraform apply` to keep the S3 copy in sync. S3 versioning preserves previous versions for rollback.
-
-### Step 6: Confirm the CodeConnection
+### Step 5: Confirm the CodeConnection
 
 After `terraform apply`, the GitHub CodeConnection will be in PENDING status. Confirm it manually:
 
@@ -179,10 +166,11 @@ ecs-service ──────────────────────�
 ## Key Design Decisions
 
 - **Rolling deployment with ECS circuit breaker** — simpler than blue/green for POC; automatic rollback on failure
-- **3 separate pipelines** — each component has distinct build/deploy requirements
-- **Configurable approval gate** — `require_manual_approval = false` for dev, `true` for prod
+- **Single pipeline (LibreChat)** — scoped to one application for POC; Admin Portal and Terraform pipelines may be added in future engagements
+- **Terraform applied locally** — no Terraform pipeline in AWS for this POC; reduces complexity and cost
 - **Provider-level default_tags** — UMass mandatory tags applied to all resources automatically
 - **Secrets Manager + Parameter Store** — no secrets in source code or S3
+- **Reusable modules** — module directories retained for future use (Admin Portal, Terraform pipeline, drift detection)
 
 ## Resources / References
 

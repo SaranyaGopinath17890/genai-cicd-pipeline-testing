@@ -59,28 +59,6 @@ variable "librechat_branch" {
   default     = "dev*"
 }
 
-variable "admin_portal_repo" {
-  description = "GitHub repository for Admin Portal (owner/repo format)"
-  type        = string
-}
-
-variable "admin_portal_branch" {
-  description = "Branch pattern to trigger the Admin Portal pipeline"
-  type        = string
-  default     = "dev*"
-}
-
-variable "terraform_repo" {
-  description = "GitHub repository for Terraform IaC (owner/repo format)"
-  type        = string
-}
-
-variable "terraform_branch" {
-  description = "Branch to trigger the Terraform pipeline"
-  type        = string
-  default     = "dev"
-}
-
 # -----------------------------------------------
 # ECR
 # -----------------------------------------------
@@ -89,12 +67,6 @@ variable "librechat_ecr_repository_name" {
   description = "ECR repository name for LibreChat container images"
   type        = string
   default     = "librechat"
-}
-
-variable "admin_portal_ecr_repository_name" {
-  description = "ECR repository name for Admin Portal container images"
-  type        = string
-  default     = "admin-portal"
 }
 
 # -----------------------------------------------
@@ -113,12 +85,6 @@ variable "librechat_container_port" {
   default     = 8080
 }
 
-variable "admin_portal_container_port" {
-  description = "Container port for the Admin Portal application"
-  type        = number
-  default     = 8080
-}
-
 variable "librechat_cpu" {
   description = "CPU units for the LibreChat ECS task"
   type        = number
@@ -127,18 +93,6 @@ variable "librechat_cpu" {
 
 variable "librechat_memory" {
   description = "Memory (MiB) for the LibreChat ECS task"
-  type        = number
-  default     = 2048
-}
-
-variable "admin_portal_cpu" {
-  description = "CPU units for the Admin Portal ECS task"
-  type        = number
-  default     = 1024
-}
-
-variable "admin_portal_memory" {
-  description = "Memory (MiB) for the Admin Portal ECS task"
   type        = number
   default     = 2048
 }
@@ -189,34 +143,10 @@ variable "notification_email" {
 # Pipeline behavior
 # -----------------------------------------------
 
-variable "require_manual_approval" {
-  description = "Whether the Terraform pipeline requires manual approval before apply (false for dev, true for prod)"
-  type        = bool
-  default     = false
-}
-
-variable "approval_timeout_hours" {
-  description = "Hours before manual approval auto-rejects (min 1, max 1440). Default: 24 hours."
-  type        = number
-  default     = 24
-}
-
-variable "github_token_secret_arn" {
-  description = "Secrets Manager ARN for GitHub API token (used for PR comments). Leave empty to skip PR comments."
-  type        = string
-  default     = ""
-}
-
 variable "codebuild_timeout_minutes" {
   description = "Default timeout in minutes for application CodeBuild projects"
   type        = number
   default     = 30
-}
-
-variable "terraform_codebuild_timeout_minutes" {
-  description = "Timeout in minutes for Terraform CodeBuild projects"
-  type        = number
-  default     = 60
 }
 
 # -----------------------------------------------
@@ -227,22 +157,6 @@ variable "log_retention_days" {
   description = "Number of days to retain CloudWatch logs"
   type        = number
   default     = 30
-}
-
-# -----------------------------------------------
-# Drift Detection
-# -----------------------------------------------
-
-variable "drift_detection_schedule" {
-  description = "EventBridge schedule expression for drift detection (cron or rate)"
-  type        = string
-  default     = "cron(0 6 * * ? *)"
-}
-
-variable "enable_drift_detection" {
-  description = "Whether to enable drift detection"
-  type        = bool
-  default     = true
 }
 
 # -----------------------------------------------
@@ -348,12 +262,6 @@ variable "codebuild_security_group_ids" {
 
 variable "librechat_target_group_arn" {
   description = "ARN of the ALB target group for LibreChat"
-  type        = string
-  default     = ""
-}
-
-variable "admin_portal_target_group_arn" {
-  description = "ARN of the ALB target group for Admin Portal"
   type        = string
   default     = ""
 }

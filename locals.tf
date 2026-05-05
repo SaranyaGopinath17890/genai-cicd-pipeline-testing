@@ -15,17 +15,9 @@ locals {
   }
 
   # Per-pipeline naming
-  librechat_name    = "${local.name_prefix}-librechat"
-  admin_portal_name = "${local.name_prefix}-admin-portal"
-  terraform_name    = "${local.name_prefix}-terraform"
+  librechat_name = "${local.name_prefix}-librechat"
 
   # CloudWatch Log Groups
-  codebuild_log_group_librechat    = "/aws/codebuild/${local.librechat_name}-build"
-  codebuild_log_group_admin_portal = "/aws/codebuild/${local.admin_portal_name}-build"
-  codebuild_log_group_terraform    = "/aws/codebuild/${local.terraform_name}-plan-apply"
-  ecs_log_group_librechat          = "/ecs/${local.librechat_name}"
-  ecs_log_group_admin_portal       = "/ecs/${local.admin_portal_name}"
-
-  # TFVars are stored in the same S3 bucket as the state backend
-  tfvars_bucket_name = "umass-genai-terraform-state"
+  codebuild_log_group_librechat = "/aws/codebuild/${local.librechat_name}-build"
+  ecs_log_group_librechat       = "/ecs/${local.librechat_name}"
 }

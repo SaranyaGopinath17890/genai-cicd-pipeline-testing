@@ -18,24 +18,16 @@ subnet_ids = ["REPLACE_ME", "REPLACE_ME"]
 github_connection_name = "github-connection"
 librechat_repo         = "REPLACE_ME" # e.g., "umass-amherst/librechat"
 librechat_branch       = "dev*"
-admin_portal_repo      = "REPLACE_ME" # e.g., "umass-amherst/admin-portal"
-admin_portal_branch    = "dev*"
-terraform_repo         = "REPLACE_ME" # e.g., "umass-amherst/terraform-cicd"
-terraform_branch       = "dev"
 
 # ECR
-librechat_ecr_repository_name    = "librechat"
-admin_portal_ecr_repository_name = "admin-portal"
+librechat_ecr_repository_name = "librechat"
 
 # ECS / Compute
-ecs_cluster_name            = "REPLACE_ME"
-ecs_cluster_id              = "" # Leave empty to use ecs_cluster_name
-librechat_container_port    = 8080
-admin_portal_container_port = 8080
-librechat_cpu               = 1024
-librechat_memory            = 2048
-admin_portal_cpu            = 1024
-admin_portal_memory         = 2048
+ecs_cluster_name         = "REPLACE_ME"
+ecs_cluster_id           = "" # Leave empty to use ecs_cluster_name
+librechat_container_port = 8080
+librechat_cpu            = 1024
+librechat_memory         = 2048
 
 # Data & Storage
 efs_file_system_id     = "REPLACE_ME"
@@ -49,17 +41,12 @@ bedrock_model_id = "REPLACE_ME" # e.g., "anthropic.claude-3-sonnet-20240229-v1:0
 # Notifications
 notification_email = "REPLACE_ME" # e.g., "team@umass.edu"
 
-# Pipeline behavior
-require_manual_approval = false # Set to true for prod environments
-approval_timeout_hours  = 24    # 24 hours — auto-rejects if no response
-
 # Security Groups
 ecs_security_group_ids       = ["REPLACE_ME"]
 codebuild_security_group_ids = [] # Only needed if CodeBuild requires VPC access
 
 # Load Balancer
-librechat_target_group_arn    = "REPLACE_ME"
-admin_portal_target_group_arn = "REPLACE_ME"
+librechat_target_group_arn = "REPLACE_ME"
 
 # -----------------------------------------------
 # Tags
