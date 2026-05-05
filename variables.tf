@@ -312,24 +312,6 @@ variable "uma_creator" {
   default     = ""
 }
 
-variable "tag_arch" {
-  description = "ARCH tag value"
-  type        = string
-  default     = "scalable"
-}
-
-variable "tag_org" {
-  description = "ORG tag value"
-  type        = string
-  default     = "umass"
-}
-
-variable "tag_project" {
-  description = "PROJECT tag value"
-  type        = string
-  default     = "genai"
-}
-
 # -----------------------------------------------
 # Security Groups
 # -----------------------------------------------

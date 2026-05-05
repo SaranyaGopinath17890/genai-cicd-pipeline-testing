@@ -17,10 +17,10 @@ provider "aws" {
       "uma-function"   = var.uma_function
       "uma-creator"    = var.uma_creator
       "environment"    = var.environment
-      "ARCH"           = var.tag_arch
+      "ARCH"           = "scalable"
       "ENV"            = var.environment
-      "ORG"            = var.tag_org
-      "PROJECT"        = var.tag_project
+      "ORG"            = "umass"
+      "PROJECT"        = "genai"
     }
   }
 }
