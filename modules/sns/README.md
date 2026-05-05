@@ -17,18 +17,18 @@ Creates a shared SNS topic for pipeline notifications with email subscription an
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `name` | SNS topic name | string | — | yes |
-| `notification_email` | Email for SNS subscription | string | — | yes |
-| `tags` | Tags to apply | map(string) | {} | no |
+|------|-------------|------|---------|:--------:|
+| <a name="input_name"></a> [name](#input\_name) | SNS topic name | `string` | `n/a` | yes |
+| <a name="input_notification_email"></a> [notification\_email](#input\_notification\_email) | Email for SNS subscription | `string` | `n/a` | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| `topic_arn` | SNS topic ARN |
-| `topic_name` | SNS topic name |
-| `topic_id` | SNS topic ID |
+| <a name="output_topic_arn"></a> [topic\_arn](#output\_topic\_arn) | SNS topic ARN |
+| <a name="output_topic_name"></a> [topic\_name](#output\_topic\_name) | SNS topic name |
+| <a name="output_topic_id"></a> [topic\_id](#output\_topic\_id) | SNS topic ID |
 
 ## Usage Example
 

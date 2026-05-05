@@ -27,33 +27,33 @@ Creates least-privilege IAM roles for all pipeline components: CodePipeline, Cod
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `name_prefix` | Naming prefix for all IAM resources | string | — | yes |
-| `tags` | Tags to apply to all IAM resources | map(string) | {} | no |
-| `s3_artifact_bucket_arn` | ARN of the S3 artifact bucket | string | "" | no |
-| `ecr_repository_arns` | List of ECR repository ARNs | list(string) | [] | no |
-| `sns_topic_arn` | ARN of the SNS topic | string | "" | no |
-| `ecs_cluster_arn` | ARN of the ECS cluster | string | "" | no |
-| `codebuild_project_arns` | List of CodeBuild project ARNs | list(string) | [] | no |
-| `secrets_manager_arns` | List of Secrets Manager ARNs | list(string) | [] | no |
-| `ssm_parameter_arns` | List of SSM Parameter ARNs | list(string) | [] | no |
-| `cloudwatch_log_group_arns` | List of CloudWatch log group ARNs | list(string) | [] | no |
-| `efs_file_system_arn` | ARN of the EFS file system | string | "" | no |
-| `s3_data_bucket_arn` | ARN of the application data S3 bucket | string | "" | no |
-| `terraform_state_bucket_arn` | ARN of the Terraform state S3 bucket | string | "" | no |
-| `terraform_lock_table_arn` | ARN of the DynamoDB lock table | string | "" | no |
-| `codestar_connection_arn` | ARN of the CodeConnection | string | "" | no |
+|------|-------------|------|---------|:--------:|
+| <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Naming prefix for all IAM resources | `string` | `n/a` | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all IAM resources | `map(string)` | `{}` | no |
+| <a name="input_s3_artifact_bucket_arn"></a> [s3\_artifact\_bucket\_arn](#input\_s3\_artifact\_bucket\_arn) | ARN of the S3 artifact bucket | `string` | `""` | no |
+| <a name="input_ecr_repository_arns"></a> [ecr\_repository\_arns](#input\_ecr\_repository\_arns) | List of ECR repository ARNs | `list(string)` | `[]` | no |
+| <a name="input_sns_topic_arn"></a> [sns\_topic\_arn](#input\_sns\_topic\_arn) | ARN of the SNS topic | `string` | `""` | no |
+| <a name="input_ecs_cluster_arn"></a> [ecs\_cluster\_arn](#input\_ecs\_cluster\_arn) | ARN of the ECS cluster | `string` | `""` | no |
+| <a name="input_codebuild_project_arns"></a> [codebuild\_project\_arns](#input\_codebuild\_project\_arns) | List of CodeBuild project ARNs | `list(string)` | `[]` | no |
+| <a name="input_secrets_manager_arns"></a> [secrets\_manager\_arns](#input\_secrets\_manager\_arns) | List of Secrets Manager ARNs | `list(string)` | `[]` | no |
+| <a name="input_ssm_parameter_arns"></a> [ssm\_parameter\_arns](#input\_ssm\_parameter\_arns) | List of SSM Parameter ARNs | `list(string)` | `[]` | no |
+| <a name="input_cloudwatch_log_group_arns"></a> [cloudwatch\_log\_group\_arns](#input\_cloudwatch\_log\_group\_arns) | List of CloudWatch log group ARNs | `list(string)` | `[]` | no |
+| <a name="input_efs_file_system_arn"></a> [efs\_file\_system\_arn](#input\_efs\_file\_system\_arn) | ARN of the EFS file system | `string` | `""` | no |
+| <a name="input_s3_data_bucket_arn"></a> [s3\_data\_bucket\_arn](#input\_s3\_data\_bucket\_arn) | ARN of the application data S3 bucket | `string` | `""` | no |
+| <a name="input_terraform_state_bucket_arn"></a> [terraform\_state\_bucket\_arn](#input\_terraform\_state\_bucket\_arn) | ARN of the Terraform state S3 bucket | `string` | `""` | no |
+| <a name="input_terraform_lock_table_arn"></a> [terraform\_lock\_table\_arn](#input\_terraform\_lock\_table\_arn) | ARN of the DynamoDB lock table | `string` | `""` | no |
+| <a name="input_codestar_connection_arn"></a> [codestar\_connection\_arn](#input\_codestar\_connection\_arn) | ARN of the CodeConnection | `string` | `""` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| `codepipeline_role_arn` | ARN of the CodePipeline service role |
-| `codebuild_role_arn` | ARN of the CodeBuild role (app builds) |
-| `codebuild_terraform_role_arn` | ARN of the CodeBuild role (Terraform) |
-| `ecs_task_execution_role_arn` | ARN of the ECS task execution role |
-| `ecs_task_role_arn` | ARN of the ECS task runtime role |
-| `terraform_execution_role_arn` | ARN of the Terraform execution role |
+| <a name="output_codepipeline_role_arn"></a> [codepipeline\_role\_arn](#output\_codepipeline\_role\_arn) | ARN of the CodePipeline service role |
+| <a name="output_codebuild_role_arn"></a> [codebuild\_role\_arn](#output\_codebuild\_role\_arn) | ARN of the CodeBuild role (app builds) |
+| <a name="output_codebuild_terraform_role_arn"></a> [codebuild\_terraform\_role\_arn](#output\_codebuild\_terraform\_role\_arn) | ARN of the CodeBuild role (Terraform) |
+| <a name="output_ecs_task_execution_role_arn"></a> [ecs\_task\_execution\_role\_arn](#output\_ecs\_task\_execution\_role\_arn) | ARN of the ECS task execution role |
+| <a name="output_ecs_task_role_arn"></a> [ecs\_task\_role\_arn](#output\_ecs\_task\_role\_arn) | ARN of the ECS task runtime role |
+| <a name="output_terraform_execution_role_arn"></a> [terraform\_execution\_role\_arn](#output\_terraform\_execution\_role\_arn) | ARN of the Terraform execution role |
 
 ## Usage Example
 

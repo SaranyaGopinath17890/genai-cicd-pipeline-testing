@@ -14,36 +14,36 @@ Creates an ECS Fargate task definition and service with rolling deployment, circ
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `name` | Service and task family name | string | — | yes |
-| `container_image` | Docker image URI | string | — | yes |
-| `container_port` | Container port | number | 8080 | no |
-| `cpu` | Fargate CPU units | number | 1024 | no |
-| `memory` | Fargate memory (MiB) | number | 2048 | no |
-| `task_execution_role_arn` | ECS task execution role ARN | string | — | yes |
-| `task_role_arn` | ECS task runtime role ARN | string | — | yes |
-| `secrets` | Secrets Manager references | list(object) | [] | no |
-| `environment` | Environment variables | list(object) | [] | no |
-| `efs_file_system_id` | EFS ID (empty to disable) | string | "" | no |
-| `log_group` | CloudWatch log group name | string | — | yes |
-| `aws_region` | AWS region | string | — | yes |
-| `cluster_id` | ECS cluster ID | string | — | yes |
-| `subnet_ids` | Subnet IDs | list(string) | — | yes |
-| `security_group_ids` | Security group IDs | list(string) | — | yes |
-| `target_group_arn` | ALB target group ARN | string | — | yes |
-| `enable_circuit_breaker` | Enable circuit breaker | bool | true | no |
-| `enable_rollback` | Enable auto-rollback | bool | true | no |
-| `tags` | Tags to apply | map(string) | {} | no |
+|------|-------------|------|---------|:--------:|
+| <a name="input_name"></a> [name](#input\_name) | Service and task family name | `string` | `n/a` | yes |
+| <a name="input_container_image"></a> [container\_image](#input\_container\_image) | Docker image URI | `string` | `n/a` | yes |
+| <a name="input_container_port"></a> [container\_port](#input\_container\_port) | Container port | `number` | `8080` | no |
+| <a name="input_cpu"></a> [cpu](#input\_cpu) | Fargate CPU units | `number` | `1024` | no |
+| <a name="input_memory"></a> [memory](#input\_memory) | Fargate memory (MiB) | `number` | `2048` | no |
+| <a name="input_task_execution_role_arn"></a> [task\_execution\_role\_arn](#input\_task\_execution\_role\_arn) | ECS task execution role ARN | `string` | `n/a` | yes |
+| <a name="input_task_role_arn"></a> [task\_role\_arn](#input\_task\_role\_arn) | ECS task runtime role ARN | `string` | `n/a` | yes |
+| <a name="input_secrets"></a> [secrets](#input\_secrets) | Secrets Manager references | `list(object)` | `[]` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | Environment variables | `list(object)` | `[]` | no |
+| <a name="input_efs_file_system_id"></a> [efs\_file\_system\_id](#input\_efs\_file\_system\_id) | EFS ID (empty to disable) | `string` | `""` | no |
+| <a name="input_log_group"></a> [log\_group](#input\_log\_group) | CloudWatch log group name | `string` | `n/a` | yes |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region | `string` | `n/a` | yes |
+| <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | ECS cluster ID | `string` | `n/a` | yes |
+| <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs | `list(string)` | `n/a` | yes |
+| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | Security group IDs | `list(string)` | `n/a` | yes |
+| <a name="input_target_group_arn"></a> [target\_group\_arn](#input\_target\_group\_arn) | ALB target group ARN | `string` | `n/a` | yes |
+| <a name="input_enable_circuit_breaker"></a> [enable\_circuit\_breaker](#input\_enable\_circuit\_breaker) | Enable circuit breaker | `bool` | `true` | no |
+| <a name="input_enable_rollback"></a> [enable\_rollback](#input\_enable\_rollback) | Enable auto-rollback | `bool` | `true` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| `service_name` | ECS service name |
-| `service_id` | ECS service ID |
-| `task_definition_arn` | Task definition ARN |
-| `task_definition_family` | Task definition family |
-| `task_definition_revision` | Task definition revision |
+| <a name="output_service_name"></a> [service\_name](#output\_service\_name) | ECS service name |
+| <a name="output_service_id"></a> [service\_id](#output\_service\_id) | ECS service ID |
+| <a name="output_task_definition_arn"></a> [task\_definition\_arn](#output\_task\_definition\_arn) | Task definition ARN |
+| <a name="output_task_definition_family"></a> [task\_definition\_family](#output\_task\_definition\_family) | Task definition family |
+| <a name="output_task_definition_revision"></a> [task\_definition\_revision](#output\_task\_definition\_revision) | Task definition revision |
 
 ## Usage Example
 

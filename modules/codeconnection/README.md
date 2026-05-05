@@ -13,18 +13,18 @@ Creates an AWS CodeConnection (CodeStar Connection) to link CodePipeline with so
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| `name` | Name of the CodeStar connection | string | — | yes |
-| `provider_type` | The provider type for the connection (e.g., GitHub, Bitbucket) | string | — | yes |
-| `tags` | Tags to apply to the connection | map(string) | — | yes |
+|------|-------------|------|---------|:--------:|
+| <a name="input_name"></a> [name](#input\_name) | Name of the CodeStar connection | `string` | n/a | yes |
+| <a name="input_provider_type"></a> [provider\_type](#input\_provider\_type) | The provider type for the connection (e.g., GitHub, Bitbucket) | `string` | n/a | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the connection | `map(string)` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| `connection_arn` | ARN of the CodeStar connection |
-| `connection_name` | Name of the CodeStar connection |
-| `connection_status` | Status of the CodeStar connection |
+| <a name="output_connection_arn"></a> [connection\_arn](#output\_connection\_arn) | ARN of the CodeStar connection |
+| <a name="output_connection_name"></a> [connection\_name](#output\_connection\_name) | Name of the CodeStar connection |
+| <a name="output_connection_status"></a> [connection\_status](#output\_connection\_status) | Status of the CodeStar connection |
 
 ## Usage Example
 
