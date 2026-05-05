@@ -64,33 +64,30 @@ module "sns" {
 }
 
 # Secrets — application secrets and configuration
-module "secrets" {
-  source = "./modules/secrets"
-
-  name_prefix = local.name_prefix
-
-  secrets = {
-    docdb-connection-string = {
-      description   = "DocumentDB connection string"
-      secret_string = var.docdb_cluster_endpoint
-    }
-  }
-
-  parameters = {
-    bedrock-model-id = {
-      description = "Amazon Bedrock model ID"
-      type        = "String"
-      value       = var.bedrock_model_id
-    }
-    environment = {
-      description = "Current environment name"
-      type        = "String"
-      value       = var.environment
-    }
-  }
-
-  tags = local.common_tags
-}
+# NOTE: Disabled for hello world testing. Uncomment for production with real DocumentDB.
+# module "secrets" {
+#   source = "./modules/secrets"
+#   name_prefix = local.name_prefix
+#   secrets = {
+#     docdb-connection-string = {
+#       description   = "DocumentDB connection string"
+#       secret_string = var.docdb_cluster_endpoint
+#     }
+#   }
+#   parameters = {
+#     bedrock-model-id = {
+#       description = "Amazon Bedrock model ID"
+#       type        = "String"
+#       value       = var.bedrock_model_id
+#     }
+#     environment = {
+#       description = "Current environment name"
+#       type        = "String"
+#       value       = var.environment
+#     }
+#   }
+#   tags = local.common_tags
+# }
 
 # =============================================================================
 # Observability
@@ -160,23 +157,21 @@ module "ecs_librechat" {
   task_execution_role_arn = module.iam.ecs_task_execution_role_arn
   task_role_arn           = module.iam.ecs_task_role_arn
 
-  secrets = [
-    { name = "DOCDB_CONNECTION_STRING", valueFrom = module.secrets.secret_arns["docdb-connection-string"] },
-  ]
+  secrets = []
 
   environment = [
     { name = "ENV", value = var.environment },
-    { name = "BEDROCK_MODEL_ID", value = var.bedrock_model_id },
   ]
 
   efs_file_system_id = var.efs_file_system_id
   log_group          = local.ecs_log_group_librechat
   aws_region         = var.aws_region
 
-  cluster_id         = var.ecs_cluster_id != "" ? var.ecs_cluster_id : var.ecs_cluster_name
-  subnet_ids         = var.subnet_ids
-  security_group_ids = var.ecs_security_group_ids
-  target_group_arn   = var.librechat_target_group_arn
+  cluster_id         = aws_ecs_cluster.this.id
+  subnet_ids         = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+  security_group_ids = [aws_security_group.ecs_tasks.id]
+  target_group_arn   = aws_lb_target_group.librechat.arn
+  assign_public_ip   = true
 
   tags = local.common_tags
 }
@@ -192,7 +187,7 @@ module "pipeline_librechat" {
   repository              = var.librechat_repo
   branch                  = var.librechat_branch
   codebuild_project_name  = module.codebuild_librechat.project_name
-  ecs_cluster_name        = var.ecs_cluster_name
+  ecs_cluster_name        = aws_ecs_cluster.this.name
   ecs_service_name        = module.ecs_librechat.service_name
   pipeline_type           = "application"
   sns_topic_arn           = module.sns.topic_arn

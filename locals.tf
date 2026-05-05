@@ -7,11 +7,11 @@ locals {
   # Naming prefix used across all resources: <project>-<environment>
   name_prefix = "${var.project_name}-${var.environment}"
 
-  # Common tags applied to every resource
+  # Common tags applied to every resource (in addition to provider default_tags)
+  # NOTE: Do not include keys that conflict case-insensitively with default_tags
+  # (e.g., "Project" conflicts with "PROJECT" in default_tags for IAM resources)
   common_tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    ManagedBy   = "terraform"
+    ManagedBy = "terraform"
   }
 
   # Per-pipeline naming

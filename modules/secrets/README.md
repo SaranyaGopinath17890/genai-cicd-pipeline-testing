@@ -4,23 +4,29 @@
 
 Creates AWS Secrets Manager secrets and SSM Parameter Store parameters for ECS task definitions to reference at container startup.
 
+## Resources
+
+- [`aws_secretsmanager_secret`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret)
+- [`aws_secretsmanager_secret_version`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version)
+- [`aws_ssm_parameter`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter)
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| name_prefix | Naming prefix for resources | string | — | yes |
-| secrets | Map of secrets (name → {description, secret_string}) | map(object) | {} | no |
-| parameters | Map of parameters (name → {description, type, value}) | map(object) | {} | no |
-| tags | Tags to apply | map(string) | {} | no |
+| `name_prefix` | Naming prefix for resources | string | — | yes |
+| `secrets` | Map of secrets (name → {description, secret_string}) | map(object) | {} | no |
+| `parameters` | Map of parameters (name → {description, type, value}) | map(object) | {} | no |
+| `tags` | Tags to apply | map(string) | {} | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| secret_arns | Map of secret name → ARN |
-| parameter_arns | Map of parameter name → ARN |
-| all_secret_arns | Flat list of all secret ARNs |
-| all_parameter_arns | Flat list of all parameter ARNs |
+| `secret_arns` | Map of secret name → ARN |
+| `parameter_arns` | Map of parameter name → ARN |
+| `all_secret_arns` | Flat list of all secret ARNs |
+| `all_parameter_arns` | Flat list of all parameter ARNs |
 
 ## Usage Example
 
