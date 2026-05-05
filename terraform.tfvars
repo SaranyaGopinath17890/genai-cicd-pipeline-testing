@@ -56,3 +56,6 @@ tag_arch    = "scalable"
 tag_env     = "dev"
 tag_org     = "umass"
 tag_project = "genai"
+
+# Pipeline behavior
+require_manual_approval = true

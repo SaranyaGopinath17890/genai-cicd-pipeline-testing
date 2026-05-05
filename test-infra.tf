@@ -106,11 +106,11 @@ resource "aws_security_group" "alb" {
   vpc_id      = aws_vpc.test.id
 
   ingress {
-    description = "Allow HTTP from anywhere"
+    description = "Allow HTTP from VPC only"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [aws_vpc.test.cidr_block]
   }
 
   egress {
@@ -130,7 +130,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_lb" "this" {
   name               = "${local.name_prefix}-alb"
-  internal           = false
+  internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
@@ -176,7 +176,7 @@ resource "aws_lb_listener" "http" {
 # =============================================================================
 
 output "alb_dns_name" {
-  description = "DNS name of the ALB (use this to access the hello world app)"
+  description = "DNS name of the ALB (internal — only accessible from within VPC)"
   value       = aws_lb.this.dns_name
 }
 

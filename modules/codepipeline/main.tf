@@ -107,6 +107,28 @@ resource "aws_codepipeline" "application" {
     }
   }
 
+  # Approval Stage (conditional — between Build and Deploy)
+  dynamic "stage" {
+    for_each = var.require_manual_approval ? [1] : []
+    content {
+      name = "Approval"
+
+      action {
+        name               = "ManualApproval"
+        category           = "Approval"
+        owner              = "AWS"
+        provider           = "Manual"
+        version            = "1"
+        timeout_in_minutes = var.approval_timeout_minutes
+
+        configuration = {
+          NotificationArn = var.approval_sns_topic_arn
+          CustomData      = "Review the build output before deploying to ECS."
+        }
+      }
+    }
+  }
+
   # Deploy Stage — ECS
   stage {
     name = "Deploy"

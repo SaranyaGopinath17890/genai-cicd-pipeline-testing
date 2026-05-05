@@ -104,14 +104,14 @@ resource "aws_iam_role_policy" "codepipeline" {
           "ecs:DescribeTasks",
           "ecs:ListTasks",
           "ecs:RegisterTaskDefinition",
-          "ecs:UpdateService"
+          "ecs:UpdateService",
+          "ecs:TagResource",
+          "ecs:ListTagsForResource",
+          "ecs:CreateTaskSet",
+          "ecs:DeleteTaskSet",
+          "ecs:UpdateServicePrimaryTaskSet"
         ]
         Resource = "*"
-        Condition = {
-          StringLike = {
-            "aws:ResourceTag/Project" = "*"
-          }
-        }
       },
       # ECS — pass role to task execution and task roles
       {

@@ -146,6 +146,12 @@ variable "codebuild_timeout_minutes" {
   type        = number
 }
 
+variable "require_manual_approval" {
+  description = "Whether the pipeline requires manual approval before deploy"
+  type        = bool
+  default     = false
+}
+
 # -----------------------------------------------
 # Logging
 # -----------------------------------------------
