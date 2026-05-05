@@ -11,7 +11,6 @@ variable "name_prefix" {
 variable "tags" {
   description = "Tags to apply to all IAM resources"
   type        = map(string)
-  default     = {}
 }
 
 # ---------------------------------------------------------------------------
@@ -21,7 +20,6 @@ variable "tags" {
 variable "s3_artifact_bucket_arn" {
   description = "ARN of the S3 bucket used for pipeline artifacts. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -31,7 +29,6 @@ variable "s3_artifact_bucket_arn" {
 variable "ecr_repository_arns" {
   description = "List of ECR repository ARNs. Pass empty list to use a wildcard."
   type        = list(string)
-  default     = []
 }
 
 # ---------------------------------------------------------------------------
@@ -41,7 +38,6 @@ variable "ecr_repository_arns" {
 variable "sns_topic_arn" {
   description = "ARN of the SNS topic for pipeline notifications. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -51,7 +47,6 @@ variable "sns_topic_arn" {
 variable "ecs_cluster_arn" {
   description = "ARN of the ECS cluster. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -61,7 +56,6 @@ variable "ecs_cluster_arn" {
 variable "codebuild_project_arns" {
   description = "List of CodeBuild project ARNs that CodePipeline may start. Pass empty list to use a wildcard."
   type        = list(string)
-  default     = []
 }
 
 # ---------------------------------------------------------------------------
@@ -71,7 +65,6 @@ variable "codebuild_project_arns" {
 variable "secrets_manager_arns" {
   description = "List of Secrets Manager secret ARNs. Pass empty list to use a wildcard."
   type        = list(string)
-  default     = []
 }
 
 # ---------------------------------------------------------------------------
@@ -81,7 +74,6 @@ variable "secrets_manager_arns" {
 variable "ssm_parameter_arns" {
   description = "List of SSM Parameter Store ARNs. Pass empty list to use a wildcard."
   type        = list(string)
-  default     = []
 }
 
 # ---------------------------------------------------------------------------
@@ -91,7 +83,6 @@ variable "ssm_parameter_arns" {
 variable "cloudwatch_log_group_arns" {
   description = "List of CloudWatch Logs log group ARNs. Pass empty list to use a wildcard."
   type        = list(string)
-  default     = []
 }
 
 # ---------------------------------------------------------------------------
@@ -101,7 +92,6 @@ variable "cloudwatch_log_group_arns" {
 variable "efs_file_system_arn" {
   description = "ARN of the EFS file system. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -111,7 +101,6 @@ variable "efs_file_system_arn" {
 variable "s3_data_bucket_arn" {
   description = "ARN of the S3 bucket for application data. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -121,13 +110,11 @@ variable "s3_data_bucket_arn" {
 variable "terraform_state_bucket_arn" {
   description = "ARN of the S3 bucket for Terraform state. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 variable "terraform_lock_table_arn" {
   description = "ARN of the DynamoDB table for Terraform state locking. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -137,5 +124,4 @@ variable "terraform_lock_table_arn" {
 variable "codestar_connection_arn" {
   description = "ARN of the CodeStar/CodeConnection for GitHub. Pass empty string to use a wildcard."
   type        = string
-  default     = ""
 }

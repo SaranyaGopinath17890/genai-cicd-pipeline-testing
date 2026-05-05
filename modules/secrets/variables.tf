@@ -31,8 +31,6 @@ variable "secrets" {
     description   = string
     secret_string = string
   }))
-  default   = {}
-  sensitive = true
 }
 
 # ---------------------------------------------------------------------------
@@ -61,12 +59,9 @@ variable "parameters" {
     type        = string
     value       = string
   }))
-  default   = {}
-  sensitive = true
 }
 
 variable "tags" {
   description = "Tags to apply to all secrets and parameters"
   type        = map(string)
-  default     = {}
 }

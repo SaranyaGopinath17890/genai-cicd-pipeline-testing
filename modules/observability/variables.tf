@@ -20,13 +20,11 @@ variable "sns_topic_arn" {
 variable "failure_rate_alarm_threshold" {
   description = "Pipeline failure rate percentage threshold for CloudWatch alarm"
   type        = number
-  default     = 50
 }
 
 variable "failure_rate_alarm_period" {
   description = "Evaluation period in seconds for the failure rate alarm"
   type        = number
-  default     = 3600
 }
 
 variable "aws_region" {
@@ -37,5 +35,4 @@ variable "aws_region" {
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
-  default     = {}
 }
