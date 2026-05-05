@@ -16,7 +16,7 @@ subnet_ids = ["subnet-07b8cd54a81377335", "subnet-0bf0aeba21b297331"]
 
 # GitHub / Source
 github_connection_name = "github-connection"
-librechat_repo         = "enquizit/umass-genai-cicd"
+librechat_repo         = "SaranyaGopinath17890/genai-cicd-pipeline-testing"
 librechat_branch       = "main"
 
 # ECR
