@@ -141,6 +141,7 @@ module "codebuild_librechat" {
     { name = "AWS_ACCOUNT_ID", value = data.aws_caller_identity.current.account_id },
     { name = "ECR_REPOSITORY_NAME", value = module.ecr_librechat.repository_name },
     { name = "CONTAINER_NAME", value = local.librechat_name },
+    { name = "DOCKER_BUILD_CONTEXT", value = var.docker_build_context },
   ]
 
   cloudwatch_log_group = local.codebuild_log_group_librechat

@@ -16,8 +16,8 @@ subnet_ids = ["REPLACE_ME", "REPLACE_ME"]
 
 # GitHub / Source
 github_connection_name = "github-connection"
-librechat_repo         = "REPLACE_ME" # e.g., "umass-amherst/librechat"
-librechat_branch       = "dev*"
+librechat_repo         = "REPLACE_ME" # e.g., "your-org/umass-genai-cicd"
+librechat_branch       = "main"
 
 # ECR
 librechat_ecr_repository_name = "librechat"
@@ -40,6 +40,7 @@ bedrock_model_id = "REPLACE_ME" # e.g., "anthropic.claude-3-sonnet-20240229-v1:0
 
 # Notifications
 notification_email = "REPLACE_ME" # e.g., "team@umass.edu"
+
 
 # Security Groups
 ecs_security_group_ids       = ["REPLACE_ME"]

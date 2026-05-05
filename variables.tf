@@ -143,6 +143,12 @@ variable "notification_email" {
 # Pipeline behavior
 # -----------------------------------------------
 
+variable "docker_build_context" {
+  description = "Docker build context path passed to CodeBuild"
+  type        = string
+  default     = "."
+}
+
 variable "codebuild_timeout_minutes" {
   description = "Default timeout in minutes for application CodeBuild projects"
   type        = number
