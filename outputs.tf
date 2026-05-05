@@ -97,13 +97,8 @@ output "codebuild_terraform_role_arn" {
 # =============================================================================
 
 output "tfvars_bucket_name" {
-  description = "Name of the TFVars S3 bucket"
-  value       = module.tfvars_bucket.bucket_name
-}
-
-output "tfvars_bucket_arn" {
-  description = "ARN of the TFVars S3 bucket"
-  value       = module.tfvars_bucket.bucket_arn
+  description = "Name of the S3 bucket storing tfvars (same as state backend bucket)"
+  value       = local.tfvars_bucket_name
 }
 
 # =============================================================================

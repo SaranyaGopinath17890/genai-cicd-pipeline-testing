@@ -277,16 +277,6 @@ variable "failure_rate_alarm_period" {
 }
 
 # -----------------------------------------------
-# TFVars Bucket
-# -----------------------------------------------
-
-variable "tfvars_bucket_name" {
-  description = "S3 bucket name for TFVars storage (auto-generated if empty)"
-  type        = string
-  default     = ""
-}
-
-# -----------------------------------------------
 # UMass Mandatory Tags (Requirement 11)
 # -----------------------------------------------
 

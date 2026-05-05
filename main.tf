@@ -45,18 +45,6 @@ module "logging" {
 }
 
 # =============================================================================
-# TFVars Bucket
-# =============================================================================
-
-module "tfvars_bucket" {
-  source = "./modules/tfvars-bucket"
-
-  bucket_name        = local.tfvars_bucket_name
-  codebuild_role_arn = module.iam.codebuild_terraform_role_arn
-  tags               = local.common_tags
-}
-
-# =============================================================================
 # Shared Infrastructure
 # =============================================================================
 
@@ -367,7 +355,7 @@ module "codebuild_terraform_plan" {
     { name = "AWS_DEFAULT_REGION", value = var.aws_region },
     { name = "GITHUB_TOKEN_SECRET_ARN", value = var.github_token_secret_arn },
     { name = "GITHUB_REPO", value = var.terraform_repo },
-    { name = "TFVARS_BUCKET", value = module.tfvars_bucket.bucket_name },
+    { name = "TFVARS_BUCKET", value = local.tfvars_bucket_name },
     { name = "ENVIRONMENT", value = var.environment },
   ]
 
@@ -394,7 +382,7 @@ module "codebuild_terraform_apply" {
     { name = "TF_VERSION", value = "1.5.7" },
     { name = "TF_WORKING_DIR", value = "." },
     { name = "AWS_DEFAULT_REGION", value = var.aws_region },
-    { name = "TFVARS_BUCKET", value = module.tfvars_bucket.bucket_name },
+    { name = "TFVARS_BUCKET", value = local.tfvars_bucket_name },
     { name = "ENVIRONMENT", value = var.environment },
   ]
 
