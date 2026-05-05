@@ -6,8 +6,10 @@ Creates an ECS Fargate task definition and service with rolling deployment, circ
 
 ## Resources
 
-- [`aws_ecs_service`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service)
-- [`aws_ecs_task_definition`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition)
+| Name | Type |
+|------|------|
+| [aws_ecs_task_definition.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) | resource |
+| [aws_ecs_service.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service) | resource |
 
 ## Inputs
 
@@ -66,9 +68,3 @@ module "ecs_librechat" {
 - `modules/iam` (provides role ARNs)
 - `modules/ecr` (provides image URI)
 - `modules/secrets` (provides secret ARNs for injection)
-
-## Resources / References
-
-- [Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html)
-- [aws_ecs_service](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service)
-- [aws_ecs_task_definition](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition)

@@ -6,7 +6,9 @@ Creates an AWS CodeBuild project for Docker image builds or Terraform operations
 
 ## Resources
 
-- [`aws_codebuild_project`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project)
+| Name | Type |
+|------|------|
+| [aws_codebuild_project.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project) | resource |
 
 ## Inputs
 
@@ -50,8 +52,3 @@ module "codebuild_app" {
 ## Dependencies
 
 - `modules/iam` (provides service role ARN)
-
-## Resources / References
-
-- [AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html)
-- [aws_codebuild_project](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project)
