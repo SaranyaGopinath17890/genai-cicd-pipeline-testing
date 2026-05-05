@@ -141,11 +141,21 @@ backend "s3" {
 
 ```bash
 terraform init
-terraform plan -var-file=environments/<env>/terraform.tfvars
-terraform apply -var-file=environments/<env>/terraform.tfvars
+terraform plan -var-file=terraform.tfvars
+terraform apply -var-file=terraform.tfvars
 ```
 
-### Step 5: Confirm the CodeConnection
+### Step 5: Copy tfvars to S3
+
+After apply, upload tfvars to the state bucket as a versioned backup:
+
+```bash
+aws s3 cp terraform.tfvars s3://umass-genai-terraform-state/cicd-pipeline/terraform.tfvars
+```
+
+> **Note:** Run this after every `terraform apply` to keep the S3 copy in sync. S3 versioning preserves previous versions for rollback.
+
+### Step 6: Confirm the CodeConnection
 
 After `terraform apply`, the GitHub CodeConnection will be in PENDING status. Confirm it manually:
 

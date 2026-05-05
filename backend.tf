@@ -15,7 +15,25 @@ terraform {
 #   3. DynamoDB table exists for state locking
 #
 # TFVars file location in the same bucket:
-#   s3://<bucket>/cicd-pipeline/terraform.tfvars
+#   s3://umass-genai-terraform-state/cicd-pipeline/terraform.tfvars
 #
 # After initial deployment, tfvars are updated (not recreated) — versioning
 # preserves previous configurations for rollback.
+#
+# -------------------------------------------------------------------------
+# DEPLOYMENT WORKFLOW (run from local):
+# -------------------------------------------------------------------------
+#
+#   # 1. Initialize Terraform
+#   terraform init
+#
+#   # 2. Plan changes
+#   terraform plan -var-file=terraform.tfvars
+#
+#   # 3. Apply changes
+#   terraform apply -var-file=terraform.tfvars
+#
+#   # 4. Copy tfvars to S3 (versioned backup alongside state file)
+#   aws s3 cp terraform.tfvars s3://umass-genai-terraform-state/cicd-pipeline/terraform.tfvars
+#
+# -------------------------------------------------------------------------
