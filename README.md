@@ -144,23 +144,23 @@ cp environments/dev/terraform.tfvars environments/<env>/terraform.tfvars
 
 ### Step 2: Update environment values
 
-Edit `environments/<env>/terraform.tfvars` and replace all `REPLACE_ME` placeholders:
+Edit `terraform.tfvars` and replace all `REPLACE_ME` placeholders:
 
 | Variable | Description |
 |----------|-------------|
-| `environment` | Environment name (e.g., `stage`, `prod`) |
-| `vpc_id` | VPC ID for the target environment |
-| `subnet_ids` | Private subnet IDs for ECS tasks and CodeBuild |
-| `librechat_repo` | GitHub repository (owner/repo format) |
-| `ecs_cluster_name` | Existing ECS cluster name |
-| `efs_file_system_id` | EFS file system ID |
-| `docdb_cluster_endpoint` | DocumentDB cluster endpoint |
-| `docdb_secret_arn` | Secrets Manager ARN for DB credentials |
-| `s3_bucket_name` | Application data S3 bucket |
-| `bedrock_model_id` | Amazon Bedrock model ID |
-| `notification_email` | Team email for SNS notifications |
-| `ecs_security_group_ids` | Security group IDs for ECS tasks |
-| `librechat_target_group_arn` | ALB target group ARN for LibreChat |
+| <a name="var_environment"></a> [environment](#var\_environment) | Environment name (e.g., `stage`, `prod`) |
+| <a name="var_vpc_id"></a> [vpc\_id](#var\_vpc\_id) | VPC ID for the target environment |
+| <a name="var_subnet_ids"></a> [subnet\_ids](#var\_subnet\_ids) | Private subnet IDs for ECS tasks and CodeBuild |
+| <a name="var_librechat_repo"></a> [librechat\_repo](#var\_librechat\_repo) | GitHub repository (owner/repo format) |
+| <a name="var_ecs_cluster_name"></a> [ecs\_cluster\_name](#var\_ecs\_cluster\_name) | Existing ECS cluster name |
+| <a name="var_efs_file_system_id"></a> [efs\_file\_system\_id](#var\_efs\_file\_system\_id) | EFS file system ID |
+| <a name="var_docdb_cluster_endpoint"></a> [docdb\_cluster\_endpoint](#var\_docdb\_cluster\_endpoint) | DocumentDB cluster endpoint |
+| <a name="var_docdb_secret_arn"></a> [docdb\_secret\_arn](#var\_docdb\_secret\_arn) | Secrets Manager ARN for DB credentials |
+| <a name="var_s3_bucket_name"></a> [s3\_bucket\_name](#var\_s3\_bucket\_name) | Application data S3 bucket |
+| <a name="var_bedrock_model_id"></a> [bedrock\_model\_id](#var\_bedrock\_model\_id) | Amazon Bedrock model ID |
+| <a name="var_notification_emails"></a> [notification\_emails](#var\_notification\_emails) | List of emails for SNS notifications |
+| <a name="var_ecs_security_group_ids"></a> [ecs\_security\_group\_ids](#var\_ecs\_security\_group\_ids) | Security group IDs for ECS tasks |
+| <a name="var_librechat_target_group_arn"></a> [librechat\_target\_group\_arn](#var\_librechat\_target\_group\_arn) | ALB target group ARN for LibreChat |
 
 ### Step 3: Update backend configuration
 
