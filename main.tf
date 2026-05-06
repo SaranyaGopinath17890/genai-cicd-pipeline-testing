@@ -197,5 +197,5 @@ module "pipeline_librechat" {
   require_manual_approval = var.require_manual_approval
   approval_sns_topic_arn  = module.sns.topic_arn
 
-  tags                    = local.common_tags
+  tags = local.common_tags
 }

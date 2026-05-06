@@ -11,8 +11,9 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 resource "aws_sns_topic" "this" {
-  name = var.name
-  tags = var.tags
+  name              = var.name
+  kms_master_key_id = "alias/aws/sns"
+  tags              = var.tags
 }
 
 resource "aws_sns_topic_subscription" "email" {

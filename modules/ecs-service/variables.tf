@@ -123,6 +123,7 @@ variable "security_group_ids" {
 variable "assign_public_ip" {
   description = "Whether to assign a public IP to the ECS tasks"
   type        = bool
+  # NOTE: Recommend false for production — use NAT gateway for outbound traffic
 }
 
 # ---------------------------------------------------------------------------

@@ -4,6 +4,8 @@
 
 Creates an Amazon ECR repository with scan-on-push and lifecycle policies for image retention.
 
+> **Production recommendation:** Set `image_tag_mutability` to `IMMUTABLE` to prevent image tags from being overwritten. This ensures deployment reproducibility and auditability.
+
 ## Resources
 
 | Name | Type |
@@ -22,9 +24,8 @@ Creates an Amazon ECR repository with scan-on-push and lifecycle policies for im
 | <a name="input_scan_on_push"></a> [scan\_on\_push](#input\_scan\_on\_push) | Enable vulnerability scanning on push | `bool` | `true` | no |
 | <a name="input_max_tagged_image_count"></a> [max\_tagged\_image\_count](#input\_max\_tagged\_image\_count) | Max tagged images to retain | `number` | `10` | no |
 | <a name="input_tagged_prefix_list"></a> [tagged\_prefix\_list](#input\_tagged\_prefix\_list) | Tag prefixes for retention rule | `list(string)` | `["dev","stage"]` | no |
-| <a name="input_untagged_image_expiry_days"></a> [untagged\_image\_expiry\_days](#input\_untagged\_image\_expiry\_days) | Days before untagged images expire | `number` | `7` | no |
-| <a name="input_force_delete"></a> [force\_delete](#input\_force\_delete) | Delete repo even with images | `bool` | `false` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply | `map(string)` | `{}` | no |
+| <a name="input_untagged_image_expiry_days"></a> [untagged\_image\_expiry\_days](#input\_untagged\_image\_expiry\_days) | Days before untagged images expire | `number` | `n/a` | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply | `map(string)` | `n/a` | yes |
 
 ## Outputs
 

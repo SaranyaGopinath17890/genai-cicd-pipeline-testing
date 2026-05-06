@@ -6,12 +6,12 @@
 - [Architecture](#architecture)
 - [Modules](#modules)
 - [Providers & Requirements](#providers--requirements)
+- [Inputs](#inputs)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Deploying to a New Environment](#deploying-to-a-new-environment)
 - [Module Dependencies](#module-dependencies)
 - [Key Design Decisions](#key-design-decisions)
-- [Resources / References](#resources--references)
 
 ## Overview
 
@@ -56,6 +56,48 @@ GitHub → CodeConnection → CodePipeline → CodeBuild → ECR → ECS Fargate
 | Provider Source | hashicorp/aws |
 
 The root module configures the AWS provider with region and default tags. Child modules declare their own `required_providers` block but inherit the provider configuration from the root.
+
+## Inputs
+
+| Name | Description | Type | Required |
+|------|-------------|------|:--------:|
+| <a name="input_environment"></a> [environment](#input\_environment) | Environment name (e.g., dev, stage, prod) | `string` | yes |
+| <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Project name used in resource naming and tagging | `string` | yes |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region for deployment | `string` | yes |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID for the environment | `string` | yes |
+| <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Subnet IDs for ECS tasks and CodeBuild | `list(string)` | yes |
+| <a name="input_github_connection_name"></a> [github\_connection\_name](#input\_github\_connection\_name) | Name of the AWS CodeConnection for GitHub integration | `string` | yes |
+| <a name="input_librechat_repo"></a> [librechat\_repo](#input\_librechat\_repo) | GitHub repository for LibreChat (owner/repo format) | `string` | yes |
+| <a name="input_librechat_branch"></a> [librechat\_branch](#input\_librechat\_branch) | Branch pattern to trigger the LibreChat pipeline | `string` | yes |
+| <a name="input_librechat_ecr_repository_name"></a> [librechat\_ecr\_repository\_name](#input\_librechat\_ecr\_repository\_name) | ECR repository name for LibreChat container images | `string` | yes |
+| <a name="input_ecs_cluster_name"></a> [ecs\_cluster\_name](#input\_ecs\_cluster\_name) | Name of the ECS cluster (must already exist) | `string` | yes |
+| <a name="input_ecs_cluster_id"></a> [ecs\_cluster\_id](#input\_ecs\_cluster\_id) | ID of the ECS cluster (if different from name) | `string` | yes |
+| <a name="input_librechat_container_port"></a> [librechat\_container\_port](#input\_librechat\_container\_port) | Container port for the LibreChat application | `number` | yes |
+| <a name="input_librechat_cpu"></a> [librechat\_cpu](#input\_librechat\_cpu) | CPU units for the LibreChat ECS task | `number` | yes |
+| <a name="input_librechat_memory"></a> [librechat\_memory](#input\_librechat\_memory) | Memory (MiB) for the LibreChat ECS task | `number` | yes |
+| <a name="input_efs_file_system_id"></a> [efs\_file\_system\_id](#input\_efs\_file\_system\_id) | EFS file system ID for persistent storage | `string` | yes |
+| <a name="input_docdb_cluster_endpoint"></a> [docdb\_cluster\_endpoint](#input\_docdb\_cluster\_endpoint) | DocumentDB cluster endpoint | `string` | yes |
+| <a name="input_docdb_secret_arn"></a> [docdb\_secret\_arn](#input\_docdb\_secret\_arn) | Secrets Manager ARN for DocumentDB credentials | `string` | yes |
+| <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | S3 bucket for application assets | `string` | yes |
+| <a name="input_bedrock_model_id"></a> [bedrock\_model\_id](#input\_bedrock\_model\_id) | Amazon Bedrock model ID for GenAI capabilities | `string` | yes |
+| <a name="input_notification_emails"></a> [notification\_emails](#input\_notification\_emails) | List of email addresses for SNS pipeline notifications | `list(string)` | yes |
+| <a name="input_docker_build_context"></a> [docker\_build\_context](#input\_docker\_build\_context) | Docker build context path passed to CodeBuild | `string` | yes |
+| <a name="input_codebuild_timeout_minutes"></a> [codebuild\_timeout\_minutes](#input\_codebuild\_timeout\_minutes) | Default timeout in minutes for application CodeBuild projects | `number` | yes |
+| <a name="input_require_manual_approval"></a> [require\_manual\_approval](#input\_require\_manual\_approval) | Whether the pipeline requires manual approval before deploy | `bool` | no |
+| <a name="input_log_retention_days"></a> [log\_retention\_days](#input\_log\_retention\_days) | Number of days to retain CloudWatch logs | `number` | yes |
+| <a name="input_ecr_notification_type"></a> [ecr\_notification\_type](#input\_ecr\_notification\_type) | ECR notification scope: scan\_result, all, or none | `string` | yes |
+| <a name="input_failure_rate_alarm_threshold"></a> [failure\_rate\_alarm\_threshold](#input\_failure\_rate\_alarm\_threshold) | Pipeline failure rate percentage threshold for CloudWatch alarm | `number` | yes |
+| <a name="input_failure_rate_alarm_period"></a> [failure\_rate\_alarm\_period](#input\_failure\_rate\_alarm\_period) | Evaluation period in seconds for the failure rate alarm | `number` | yes |
+| <a name="input_uma_speed_type"></a> [uma\_speed\_type](#input\_uma\_speed\_type) | UMass speed type tag value | `string` | yes |
+| <a name="input_uma_function"></a> [uma\_function](#input\_uma\_function) | UMass function tag value | `string` | yes |
+| <a name="input_uma_creator"></a> [uma\_creator](#input\_uma\_creator) | UMass creator tag value | `string` | yes |
+| <a name="input_tag_arch"></a> [tag\_arch](#input\_tag\_arch) | ARCH tag value | `string` | yes |
+| <a name="input_tag_env"></a> [tag\_env](#input\_tag\_env) | ENV tag value | `string` | yes |
+| <a name="input_tag_org"></a> [tag\_org](#input\_tag\_org) | ORG tag value | `string` | yes |
+| <a name="input_tag_project"></a> [tag\_project](#input\_tag\_project) | PROJECT tag value | `string` | yes |
+| <a name="input_ecs_security_group_ids"></a> [ecs\_security\_group\_ids](#input\_ecs\_security\_group\_ids) | Security group IDs for ECS tasks | `list(string)` | yes |
+| <a name="input_codebuild_security_group_ids"></a> [codebuild\_security\_group\_ids](#input\_codebuild\_security\_group\_ids) | Security group IDs for CodeBuild projects (if VPC access needed) | `list(string)` | yes |
+| <a name="input_librechat_target_group_arn"></a> [librechat\_target\_group\_arn](#input\_librechat\_target\_group\_arn) | ARN of the ALB target group for LibreChat | `string` | yes |
 
 ## Project Structure
 
@@ -172,12 +214,4 @@ ecs-service ──────────────────────�
 - **Secrets Manager + Parameter Store** — no secrets in source code or S3
 - **Reusable modules** — module directories retained for future use (Admin Portal, Terraform pipeline, drift detection)
 
-## Resources / References
 
-- [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-- [AWS CodePipeline Documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html)
-- [AWS CodeBuild Documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html)
-- [Amazon ECR Documentation](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html)
-- [Amazon ECS Documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html)
-- [AWS CodeConnections](https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html)
-- [Terraform Module Best Practices](https://developer.hashicorp.com/terraform/language/modules/develop)

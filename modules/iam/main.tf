@@ -15,7 +15,7 @@ data "aws_region" "current" {}
 
 locals {
   account_id = data.aws_caller_identity.current.account_id
-  region     = data.aws_region.current.name
+  region     = data.aws_region.current.id
 
   # Resolve "use provided ARN or fall back to wildcard" for each resource type
   s3_artifact_bucket_arn  = var.s3_artifact_bucket_arn != "" ? var.s3_artifact_bucket_arn : "arn:aws:s3:::${var.name_prefix}-*"
@@ -95,6 +95,7 @@ resource "aws_iam_role_policy" "codepipeline" {
         Resource = local.codebuild_project_arns
       },
       # ECS — deploy (update service, describe, register task def)
+      # TODO: Scope to specific cluster ARN in production
       {
         Sid    = "ECSDeployAccess"
         Effect = "Allow"
@@ -327,7 +328,7 @@ resource "aws_iam_role_policy" "codebuild_terraform" {
       },
       # Resource provisioning — scoped to project-prefixed resources
       # This allows Terraform to manage the infrastructure it creates.
-      # In production, scope this further to specific resource types.
+      # TODO: Scope to specific ARN patterns per resource type in production
       {
         Sid    = "ResourceProvisioning"
         Effect = "Allow"
@@ -376,6 +377,11 @@ resource "aws_iam_role_policy" "codebuild_terraform" {
           "s3:GetBucketLocation"
         ]
         Resource = "*"
+        Condition = {
+          StringLike = {
+            "aws:ResourceTag/Project" = var.name_prefix
+          }
+        }
       },
       # AssumeRole — allow CodeBuild to assume the dedicated Terraform execution role
       {
@@ -584,7 +590,7 @@ resource "aws_iam_role_policy" "terraform_execution" {
     Version = "2012-10-17"
     Statement = [
       # Resource provisioning — scoped to project-prefixed resources
-      # In production, scope this further to specific resource types and ARN patterns.
+      # TODO: Scope to specific ARN patterns per resource type in production
       {
         Sid    = "ResourceProvisioning"
         Effect = "Allow"
@@ -633,6 +639,11 @@ resource "aws_iam_role_policy" "terraform_execution" {
           "s3:GetBucketLocation"
         ]
         Resource = "*"
+        Condition = {
+          StringLike = {
+            "aws:ResourceTag/Project" = var.name_prefix
+          }
+        }
       }
     ]
   })

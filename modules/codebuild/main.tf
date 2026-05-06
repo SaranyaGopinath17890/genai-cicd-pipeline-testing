@@ -32,9 +32,10 @@ resource "aws_codebuild_project" "this" {
 
   # Build environment
   environment {
-    compute_type    = var.compute_type
-    image           = var.image
-    type            = "LINUX_CONTAINER"
+    compute_type = var.compute_type
+    image        = var.image
+    type         = "LINUX_CONTAINER"
+    # NOTE: privileged_mode should only be true for Docker image builds, not Terraform operations
     privileged_mode = var.privileged_mode
 
     dynamic "environment_variable" {

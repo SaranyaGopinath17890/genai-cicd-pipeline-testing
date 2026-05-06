@@ -23,12 +23,13 @@ librechat_branch       = "main"
 librechat_ecr_repository_name = "librechat"
 
 # ECS / Compute
-librechat_container_port = 80  # nginx listens on 80
+librechat_container_port = 80 # nginx listens on 80
 librechat_cpu            = 256
 librechat_memory         = 512
 
 # Data & Storage (dummy values — not used by hello world nginx app)
-efs_file_system_id     = ""
+efs_file_system_id = ""
+# NOTE: In production, move sensitive endpoints to Secrets Manager or SSM Parameter Store
 docdb_cluster_endpoint = "placeholder"
 docdb_secret_arn       = "placeholder"
 s3_bucket_name         = "umass-state-bucket-test"
@@ -37,7 +38,7 @@ s3_bucket_name         = "umass-state-bucket-test"
 bedrock_model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
 
 # Notifications
-notification_emails = ["saranya.gopinath@cdwg.com"]
+notification_emails = ["saranya.gopinath@cdwg.com", "heruy.mengistu@cdwg.com"]
 
 # Docker build context
 docker_build_context = "apps/librechat"

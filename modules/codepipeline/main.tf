@@ -20,7 +20,7 @@
 
 resource "aws_s3_bucket" "artifacts" {
   bucket        = var.artifact_bucket_name
-  force_destroy = true
+  force_destroy = false
 
   tags = var.tags
 }
@@ -50,6 +50,23 @@ resource "aws_s3_bucket_public_access_block" "artifacts" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+
+  rule {
+    id     = "expire-old-artifacts"
+    status = "Enabled"
+
+    expiration {
+      days = 90
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
 }
 
 # =============================================================================
@@ -236,11 +253,11 @@ resource "aws_codepipeline" "terraform" {
       name = "Approval"
 
       action {
-        name             = "ManualApproval"
-        category         = "Approval"
-        owner            = "AWS"
-        provider         = "Manual"
-        version          = "1"
+        name               = "ManualApproval"
+        category           = "Approval"
+        owner              = "AWS"
+        provider           = "Manual"
+        version            = "1"
         timeout_in_minutes = var.approval_timeout_minutes
 
         configuration = {

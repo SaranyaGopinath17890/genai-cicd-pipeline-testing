@@ -85,12 +85,31 @@ resource "aws_security_group" "ecs_tasks" {
     security_groups = [aws_security_group.alb.id]
   }
 
+  # HTTPS egress (ECR, S3, Secrets Manager, etc.)
   egress {
-    description = "Allow all outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTPS to AWS services (ECR, S3, Secrets Manager, CloudWatch)"
+  }
+
+  # DNS egress
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "DNS resolution"
+  }
+
+  # DocumentDB egress (port 27017) — only to VPC CIDR
+  egress {
+    from_port   = 27017
+    to_port     = 27017
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+    description = "DocumentDB access within VPC"
   }
 
   tags = local.common_tags

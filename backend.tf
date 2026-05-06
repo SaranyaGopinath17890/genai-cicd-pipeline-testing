@@ -1,3 +1,7 @@
+# NOTE: The client should configure KMS encryption on this bucket.
+# Add kms_key_id to the backend block when a CMK is available:
+#   kms_key_id = "arn:aws:kms:us-east-1:ACCOUNT:key/KEY-ID"
+
 terraform {
   backend "s3" {
     bucket         = "umass-state-bucket-test"

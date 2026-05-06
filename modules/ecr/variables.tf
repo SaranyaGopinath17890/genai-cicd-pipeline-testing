@@ -38,10 +38,7 @@ variable "untagged_image_expiry_days" {
   type        = number
 }
 
-variable "force_delete" {
-  description = "Whether to delete the repository even if it contains images"
-  type        = bool
-}
+
 
 variable "ecr_notification_type" {
   description = "ECR notification scope: scan_result, all, or none"

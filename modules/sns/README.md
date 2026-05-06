@@ -19,7 +19,7 @@ Creates a shared SNS topic for pipeline notifications with email subscription an
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name"></a> [name](#input\_name) | SNS topic name | `string` | `n/a` | yes |
-| <a name="input_notification_email"></a> [notification\_email](#input\_notification\_email) | Email for SNS subscription | `string` | `n/a` | yes |
+| <a name="input_notification_emails"></a> [notification\_emails](#input\_notification\_emails) | List of email addresses for SNS subscription | `list(string)` | `n/a` | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -36,7 +36,7 @@ Creates a shared SNS topic for pipeline notifications with email subscription an
 module "sns" {
   source             = "./modules/sns"
   name               = "genai-cicd-dev-notifications"
-  notification_email = "team@umass.edu"
+  notification_emails = ["team@umass.edu"]
 }
 ```
 
