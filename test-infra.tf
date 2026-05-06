@@ -106,11 +106,11 @@ resource "aws_security_group" "alb" {
   vpc_id      = aws_vpc.test.id
 
   ingress {
-    description = "Allow HTTP from VPC only"
+    description = "Allow HTTP from my IP only"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.test.cidr_block]
+    cidr_blocks = ["128.119.53.98/32"]
   }
 
   egress {
@@ -130,7 +130,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_lb" "this" {
   name               = "${local.name_prefix}-alb"
-  internal           = true
+  internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]

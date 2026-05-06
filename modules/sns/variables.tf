@@ -16,4 +16,5 @@ variable "notification_email" {
 variable "tags" {
   description = "Tags to apply to the SNS topic"
   type        = map(string)
+  default     = {}
 }

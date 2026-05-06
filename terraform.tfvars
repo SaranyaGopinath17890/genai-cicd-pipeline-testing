@@ -23,7 +23,7 @@ librechat_branch       = "main"
 librechat_ecr_repository_name = "librechat"
 
 # ECS / Compute
-librechat_container_port = 80  # nginx listens on 80
+librechat_container_port = 80 # nginx listens on 80
 librechat_cpu            = 256
 librechat_memory         = 512
 
@@ -58,4 +58,22 @@ tag_org     = "umass"
 tag_project = "genai"
 
 # Pipeline behavior
-require_manual_approval = true
+require_manual_approval      = true
+codebuild_timeout_minutes    = 30
+codebuild_security_group_ids = []
+
+# Logging
+log_retention_days = 30
+
+# ECR Scanning
+ecr_notification_type = "scan_result"
+
+# Observability
+failure_rate_alarm_threshold = 50
+failure_rate_alarm_period    = 3600
+
+# ECS (created by test-infra.tf — these are unused but required)
+ecs_cluster_name          = "gen-ai-cicd-cluster"
+ecs_security_group_ids    = []
+ecs_cluster_id            = ""
+librechat_target_group_arn = ""

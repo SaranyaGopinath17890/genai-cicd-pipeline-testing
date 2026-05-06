@@ -5,6 +5,7 @@ terraform {
     region         = "us-east-1"
     encrypt        = true
     dynamodb_table = "umass-state-table-test"
+    profile        = "eq-hm-sandbox"
   }
 }
 

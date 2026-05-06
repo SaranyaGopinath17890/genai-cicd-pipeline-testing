@@ -11,6 +11,7 @@ variable "name" {
 variable "description" {
   description = "Description of the CodeBuild project"
   type        = string
+  default     = ""
 }
 
 variable "service_role_arn" {
@@ -25,21 +26,25 @@ variable "service_role_arn" {
 variable "compute_type" {
   description = "CodeBuild compute type (BUILD_GENERAL1_SMALL, BUILD_GENERAL1_MEDIUM, BUILD_GENERAL1_LARGE)"
   type        = string
+  default     = "BUILD_GENERAL1_SMALL"
 }
 
 variable "image" {
   description = "Docker image for the build environment"
   type        = string
+  default     = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
 }
 
 variable "privileged_mode" {
   description = "Whether to enable Docker daemon inside the build container (required for docker build)"
   type        = bool
+  default     = true
 }
 
 variable "build_timeout" {
   description = "Build timeout in minutes"
   type        = number
+  default     = 30
 }
 
 # ---------------------------------------------------------------------------
@@ -49,6 +54,7 @@ variable "build_timeout" {
 variable "buildspec" {
   description = "Path to the buildspec file relative to source root, or inline buildspec YAML"
   type        = string
+  default     = "buildspec.yml"
 }
 
 # ---------------------------------------------------------------------------
@@ -65,6 +71,7 @@ variable "environment_variables" {
     value = string
     type  = optional(string, "PLAINTEXT")
   }))
+  default = []
 }
 
 # ---------------------------------------------------------------------------
@@ -74,6 +81,7 @@ variable "environment_variables" {
 variable "artifact_type" {
   description = "Type of build output artifact (CODEPIPELINE, S3, NO_ARTIFACTS)"
   type        = string
+  default     = "CODEPIPELINE"
 }
 
 # ---------------------------------------------------------------------------
@@ -83,11 +91,13 @@ variable "artifact_type" {
 variable "cloudwatch_log_group" {
   description = "CloudWatch Logs log group name for build logs"
   type        = string
+  default     = ""
 }
 
 variable "cloudwatch_log_stream" {
   description = "CloudWatch Logs stream prefix for build logs"
   type        = string
+  default     = ""
 }
 
 # ---------------------------------------------------------------------------
@@ -97,16 +107,19 @@ variable "cloudwatch_log_stream" {
 variable "cache_type" {
   description = "Cache type (NO_CACHE, S3, LOCAL)"
   type        = string
+  default     = "NO_CACHE"
 }
 
 variable "cache_location" {
   description = "S3 bucket location for cache (required when cache_type is S3)"
   type        = string
+  default     = ""
 }
 
 variable "cache_modes" {
   description = "Cache modes for LOCAL cache type"
   type        = list(string)
+  default     = []
 }
 
 # ---------------------------------------------------------------------------
@@ -120,9 +133,11 @@ variable "vpc_config" {
     subnets            = list(string)
     security_group_ids = list(string)
   })
+  default = null
 }
 
 variable "tags" {
   description = "Tags to apply to the CodeBuild project"
   type        = map(string)
+  default     = {}
 }
