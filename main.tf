@@ -58,9 +58,9 @@ module "iam" {
 module "sns" {
   source = "./modules/sns"
 
-  name               = "${local.name_prefix}-pipeline-notifications"
-  notification_email = var.notification_email
-  tags               = local.common_tags
+  name                = "${local.name_prefix}-pipeline-notifications"
+  notification_emails = var.notification_emails
+  tags                = local.common_tags
 }
 
 # Secrets — application secrets and configuration

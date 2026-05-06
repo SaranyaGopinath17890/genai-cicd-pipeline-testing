@@ -8,9 +8,9 @@ variable "name" {
   type        = string
 }
 
-variable "notification_email" {
-  description = "Email address to subscribe to the SNS topic for notifications"
-  type        = string
+variable "notification_emails" {
+  description = "List of email addresses to subscribe to the SNS topic for notifications"
+  type        = list(string)
 }
 
 variable "tags" {

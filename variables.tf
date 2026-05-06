@@ -127,9 +127,9 @@ variable "bedrock_model_id" {
 # Notifications
 # -----------------------------------------------
 
-variable "notification_email" {
-  description = "Email address for SNS pipeline notifications"
-  type        = string
+variable "notification_emails" {
+  description = "List of email addresses for SNS pipeline notifications"
+  type        = list(string)
 }
 
 # -----------------------------------------------

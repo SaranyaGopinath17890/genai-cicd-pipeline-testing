@@ -37,7 +37,7 @@ s3_bucket_name         = "umass-state-bucket-test"
 bedrock_model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
 
 # Notifications
-notification_email = "saranya.gopinath@cdwg.com"
+notification_emails = ["saranya.gopinath@cdwg.com"]
 
 # Docker build context
 docker_build_context = "apps/librechat"

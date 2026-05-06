@@ -16,9 +16,11 @@ resource "aws_sns_topic" "this" {
 }
 
 resource "aws_sns_topic_subscription" "email" {
+  for_each = toset(var.notification_emails)
+
   topic_arn = aws_sns_topic.this.arn
   protocol  = "email"
-  endpoint  = var.notification_email
+  endpoint  = each.value
 }
 
 resource "aws_sns_topic_policy" "this" {
